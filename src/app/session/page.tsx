@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { Mic, MicOff, Phone, AlertTriangle } from 'lucide-react';
+import { Mic, MicOff, PhoneOff, AlertTriangle, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { Orb } from '@/components/voice/Orb';
 import { TranscriptPanel } from '@/components/voice/TranscriptPanel';
@@ -64,6 +64,7 @@ function SessionInner() {
 
   const [hasStarted, setHasStarted] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [micError, setMicError] = useState(false);
   const startTimeRef = useRef<number | null>(null);
 
   // Timer
@@ -78,20 +79,38 @@ function SessionInner() {
     return () => clearInterval(interval);
   }, [hasStarted]);
 
+  // Store transcript to sessionStorage for the report page
+  useEffect(() => {
+    if (transcript.length > 0) {
+      sessionStorage.setItem('helm-transcript', JSON.stringify(transcript));
+    }
+  }, [transcript]);
+
   const formatTime = (s: number) => {
     const mins = Math.floor(s / 60);
     const secs = s % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleStart = () => {
+  const handleStart = async () => {
+    // Request microphone permission early so the user sees the prompt
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Release immediately — the voice hook will request again when needed
+      stream.getTracks().forEach((t) => t.stop());
+    } catch {
+      setMicError(true);
+      return;
+    }
+
     setHasStarted(true);
     startSession(ticketSlug);
   };
 
   const handleEnd = () => {
     endSession();
-    router.push('/select');
+    // Navigate to report page (transcript is already in sessionStorage)
+    router.push(`/report?ticket=${ticketSlug}`);
   };
 
   // ── Pre-start view ──
@@ -116,7 +135,17 @@ function SessionInner() {
           <div className="mt-6 flex max-w-md items-start gap-3 rounded-lg border border-[#FDE68A] bg-[#FEF3C7] px-4 py-3">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#D97706]" />
             <p className="text-sm text-[#92400E]">
-              Voice input works best in Chrome. Please switch for the full experience.
+              Voice input requires Chrome or Edge. Please switch browsers for the full experience.
+            </p>
+          </div>
+        )}
+
+        {/* Mic permission denied warning */}
+        {micError && (
+          <div className="mt-6 flex max-w-md items-start gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-4 py-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#EF4444]" />
+            <p className="text-sm text-[#991B1B]">
+              Microphone access is required. Please allow microphone permissions and try again.
             </p>
           </div>
         )}
@@ -149,9 +178,10 @@ function SessionInner() {
         <span className="text-sm font-medium text-[#6B7280]">{ticketName}</span>
         <button
           onClick={handleEnd}
-          className="text-sm text-[#6B7280] transition-colors hover:text-[#111111]"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#EF4444] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#DC2626]"
         >
-          End session
+          <PhoneOff className="h-4 w-4" />
+          End
         </button>
       </header>
 
@@ -181,7 +211,8 @@ function SessionInner() {
       />
 
       {/* ── Bottom control bar ── */}
-      <div className="flex h-20 items-center justify-center border-t border-[#E5E7EB]">
+      <div className="flex h-20 items-center justify-center gap-4 border-t border-[#E5E7EB]">
+        {/* Mic button */}
         <button
           onClick={toggleMic}
           disabled={state === 'processing' || state === 'speaking'}
@@ -196,6 +227,15 @@ function SessionInner() {
           ) : (
             <MicOff className="h-5 w-5" />
           )}
+        </button>
+
+        {/* Report button (always visible during session) */}
+        <button
+          onClick={handleEnd}
+          className="flex h-14 items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#F7F8FA] px-5 text-sm font-medium text-[#6B7280] transition-all hover:border-[#D1D5DB] hover:text-[#111111]"
+        >
+          <FileText className="h-4 w-4" />
+          Get Report
         </button>
       </div>
     </div>
