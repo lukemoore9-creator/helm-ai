@@ -1,35 +1,73 @@
 export async function POST(req: Request) {
   const { text } = await req.json();
 
-  const response = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}/stream`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": process.env.ELEVENLABS_API_KEY!,
-      },
-      body: JSON.stringify({
-        text,
-        model_id: "eleven_turbo_v2_5",
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-          style: 0.0,
-          use_speaker_boost: true,
-        },
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    return new Response("TTS failed", { status: response.status });
+  if (!text) {
+    return Response.json({ error: "No text provided" }, { status: 400 });
   }
 
-  return new Response(response.body, {
-    headers: {
-      "Content-Type": "audio/mpeg",
-      "Transfer-Encoding": "chunked",
-    },
-  });
+  const voiceId = process.env.ELEVENLABS_VOICE_ID;
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+
+  if (!voiceId || !apiKey) {
+    console.error("TTS: Missing ELEVENLABS_VOICE_ID or ELEVENLABS_API_KEY");
+    return Response.json({ error: "TTS not configured" }, { status: 500 });
+  }
+
+  try {
+    // Use the non-streaming endpoint — we need the full buffer for Web Audio
+    // decodeAudioData anyway, and this avoids chunked transfer issues.
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "audio/mpeg",
+          "xi-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          text,
+          model_id: "eleven_multilingual_v2",
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0.0,
+            use_speaker_boost: true,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(`TTS: ElevenLabs returned ${response.status}:`, errorBody);
+      return Response.json(
+        { error: `ElevenLabs error: ${response.status}`, detail: errorBody },
+        { status: response.status }
+      );
+    }
+
+    const audioBuffer = await response.arrayBuffer();
+
+    if (audioBuffer.byteLength < 100) {
+      console.error(`TTS: Suspiciously small response (${audioBuffer.byteLength} bytes)`);
+      return Response.json(
+        { error: "TTS returned empty audio" },
+        { status: 502 }
+      );
+    }
+
+    return new Response(audioBuffer, {
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Content-Length": audioBuffer.byteLength.toString(),
+      },
+    });
+  } catch (err) {
+    console.error("TTS: Fetch to ElevenLabs failed:", err);
+    return Response.json(
+      { error: "Failed to reach ElevenLabs" },
+      { status: 502 }
+    );
+  }
 }

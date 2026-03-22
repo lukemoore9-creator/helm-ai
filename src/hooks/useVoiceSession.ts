@@ -19,7 +19,7 @@ interface TranscriptEntry {
   timestamp: number;
 }
 
-// Browser SpeechRecognition types (not in standard TS lib)
+// Browser SpeechRecognition types
 interface SpeechRecognitionEvent extends Event {
   readonly resultIndex: number;
   readonly results: SpeechRecognitionResultList;
@@ -55,24 +55,17 @@ declare global {
 // ---------------------------------------------------------------------------
 
 interface UseVoiceSessionReturn {
-  /** Current state machine position */
   state: SessionState;
-  /** Full transcript for UI display */
   transcript: TranscriptEntry[];
-  /** Interim (gray) transcript while user is still speaking */
   interimTranscript: string;
-  /** Start a new exam session */
   startSession: (ticketType: string) => void;
-  /** End the current session */
   endSession: () => void;
-  /** Manually toggle the microphone on/off */
   toggleMic: () => void;
-  /** AnalyserNode for the TTS output — feed to Orb during SPEAKING */
   analyserNode: AnalyserNode | null;
-  /** Microphone input level 0-1 — feed to Orb during LISTENING */
   micLevel: number;
-  /** Whether the browser supports SpeechRecognition */
   browserSupported: boolean;
+  /** Last error message — show in UI so problems are visible */
+  lastError: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -87,8 +80,9 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
   const [micLevel, setMicLevel] = useState(0);
   const [browserSupported, setBrowserSupported] = useState(true);
+  const [lastError, setLastError] = useState<string | null>(null);
 
-  // ---- Refs (stable across renders) ----
+  // ---- Refs ----
   const messagesRef = useRef<Message[]>([]);
   const ticketTypeRef = useRef<string>('oow-unlimited');
   const stateRef = useRef<SessionState>('idle');
@@ -109,7 +103,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     stateRef.current = state;
   }, [state]);
 
-  // Check browser support on mount
+  // Check browser support
   useEffect(() => {
     const supported =
       typeof window !== 'undefined' &&
@@ -118,7 +112,22 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   }, []);
 
   // ------------------------------------------------------------------
-  // Microphone level metering (for Orb animation during LISTENING)
+  // Helper: ensure AudioContext exists and is running
+  // ------------------------------------------------------------------
+
+  const ensureAudioContext = useCallback(async (): Promise<AudioContext> => {
+    if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
+      audioContextRef.current = new AudioContext();
+    }
+    const ctx = audioContextRef.current;
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
+    }
+    return ctx;
+  }, []);
+
+  // ------------------------------------------------------------------
+  // Microphone level metering (for Orb during LISTENING)
   // ------------------------------------------------------------------
 
   const startMicMeter = useCallback(async () => {
@@ -139,7 +148,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
 
       const tick = () => {
         analyser.getByteFrequencyData(dataArray);
-        // RMS-ish level normalised to 0-1
         let sum = 0;
         for (let i = 0; i < dataArray.length; i++) {
           sum += dataArray[i];
@@ -151,7 +159,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
 
       micRafRef.current = requestAnimationFrame(tick);
     } catch (err) {
-      console.warn('Could not access microphone for metering:', err);
+      console.warn('[VoiceSession] Mic metering failed:', err);
     }
   }, []);
 
@@ -173,94 +181,106 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   }, []);
 
   // ------------------------------------------------------------------
-  // TTS playback via Web Audio API (gives us an AnalyserNode)
+  // TTS playback via Web Audio API
   // ------------------------------------------------------------------
 
-  const playTTS = useCallback(async (text: string): Promise<void> => {
-    try {
-      const res = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
+  const playTTS = useCallback(
+    async (text: string): Promise<void> => {
+      console.log('[VoiceSession] playTTS called, text length:', text.length);
 
-      if (!res.ok) {
-        throw new Error(`TTS response ${res.status}`);
-      }
+      try {
+        // 1. Fetch audio from our TTS API
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
 
-      const arrayBuf = await res.arrayBuffer();
-
-      // Create / reuse AudioContext
-      if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
-        audioContextRef.current = new AudioContext();
-      }
-      const ctx = audioContextRef.current;
-
-      if (ctx.state === 'suspended') {
-        await ctx.resume();
-      }
-
-      const audioBuffer = await ctx.decodeAudioData(arrayBuf.slice(0));
-
-      // Create nodes
-      const source = ctx.createBufferSource();
-      source.buffer = audioBuffer;
-
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-
-      source.connect(analyser);
-      analyser.connect(ctx.destination);
-
-      sourceNodeRef.current = source;
-      analyserRef.current = analyser;
-      setAnalyserNode(analyser);
-
-      // Return a promise that resolves when playback finishes
-      return new Promise<void>((resolve) => {
-        source.onended = () => {
-          sourceNodeRef.current = null;
-          analyserRef.current = null;
-          setAnalyserNode(null);
-          resolve();
-        };
-        source.start(0);
-      });
-    } catch (err) {
-      console.error('TTS playback failed, falling back to speechSynthesis:', err);
-
-      // Fallback: browser speechSynthesis
-      return new Promise<void>((resolve) => {
-        if ('speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = 'en-GB';
-          utterance.rate = 1;
-          utterance.onend = () => resolve();
-          utterance.onerror = () => resolve();
-          window.speechSynthesis.speak(utterance);
-        } else {
-          resolve();
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(
+            `TTS API returned ${res.status}: ${errorData.error || 'unknown error'}`
+          );
         }
-      });
-    }
-  }, []);
+
+        // 2. Get the audio as an ArrayBuffer
+        const arrayBuf = await res.arrayBuffer();
+        console.log('[VoiceSession] TTS audio received:', arrayBuf.byteLength, 'bytes');
+
+        if (arrayBuf.byteLength < 100) {
+          throw new Error(`TTS returned tiny audio (${arrayBuf.byteLength} bytes)`);
+        }
+
+        // 3. Decode audio via Web Audio API
+        const ctx = await ensureAudioContext();
+        const audioBuffer = await ctx.decodeAudioData(arrayBuf.slice(0));
+        console.log('[VoiceSession] Audio decoded:', audioBuffer.duration.toFixed(1), 'seconds');
+
+        // 4. Create source → analyser → destination chain
+        const source = ctx.createBufferSource();
+        source.buffer = audioBuffer;
+
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
+
+        sourceNodeRef.current = source;
+        analyserRef.current = analyser;
+        setAnalyserNode(analyser);
+
+        // 5. Play and wait for completion
+        return new Promise<void>((resolve) => {
+          source.onended = () => {
+            console.log('[VoiceSession] Audio playback ended');
+            sourceNodeRef.current = null;
+            analyserRef.current = null;
+            setAnalyserNode(null);
+            resolve();
+          };
+          source.start(0);
+          console.log('[VoiceSession] Audio playback started');
+        });
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Unknown TTS error';
+        console.error('[VoiceSession] TTS failed:', errorMsg);
+        setLastError(`Voice playback failed: ${errorMsg}`);
+
+        // Fallback: browser speechSynthesis
+        return new Promise<void>((resolve) => {
+          if ('speechSynthesis' in window) {
+            console.log('[VoiceSession] Falling back to browser speech synthesis');
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-GB';
+            utterance.rate = 1;
+            utterance.onend = () => resolve();
+            utterance.onerror = () => resolve();
+            window.speechSynthesis.speak(utterance);
+          } else {
+            resolve();
+          }
+        });
+      }
+    },
+    [ensureAudioContext]
+  );
 
   // ------------------------------------------------------------------
-  // Send transcript to Claude, get response, play TTS
+  // Send user speech to Claude, get response, play TTS
   // ------------------------------------------------------------------
 
   const processUserSpeech = useCallback(
     async (userText: string) => {
       if (!userText.trim() || !isSessionActiveRef.current) return;
 
-      // Transition to PROCESSING
+      console.log('[VoiceSession] Processing user speech:', userText.substring(0, 50) + '...');
       setState('processing');
+      setLastError(null);
 
-      // Add user message to the conversation
       const userMsg: Message = { role: 'user', content: userText.trim() };
       messagesRef.current = [...messagesRef.current, userMsg];
 
-      // Add to transcript
       setTranscript((prev) => [
         ...prev,
         { speaker: 'candidate', text: userText.trim(), timestamp: Date.now() },
@@ -269,6 +289,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
 
       try {
         // Call Claude
+        console.log('[VoiceSession] Calling /api/chat...');
         const chatRes = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -279,35 +300,39 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         });
 
         if (!chatRes.ok) {
-          throw new Error(`Chat API ${chatRes.status}`);
+          throw new Error(`Chat API returned ${chatRes.status}`);
         }
 
         const { text: assistantText } = await chatRes.json();
+        console.log('[VoiceSession] Claude responded:', assistantText.substring(0, 50) + '...');
 
-        // Add assistant message to conversation
         const assistantMsg: Message = { role: 'assistant', content: assistantText };
         messagesRef.current = [...messagesRef.current, assistantMsg];
 
-        // Add to transcript
         setTranscript((prev) => [
           ...prev,
           { speaker: 'examiner', text: assistantText, timestamp: Date.now() },
         ]);
 
-        // Transition to SPEAKING and play TTS
-        setState('speaking');
+        // Stop mic meter before speaking
         stopMicMeter();
-        await playTTS(assistantText);
 
-        // After audio finishes, auto-transition back to LISTENING
+        // Speak the response
+        setState('speaking');
+        console.log('[VoiceSession] Playing TTS...');
+        await playTTS(assistantText);
+        console.log('[VoiceSession] TTS playback complete, reopening mic...');
+
+        // After audio finishes, reopen mic
         if (isSessionActiveRef.current) {
           setState('listening');
           startListeningInternal();
         }
       } catch (err) {
-        console.error('processUserSpeech error:', err);
+        const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+        console.error('[VoiceSession] processUserSpeech error:', errorMsg);
+        setLastError(errorMsg);
 
-        // Add error message to transcript
         const errorText =
           'I apologise, there seems to be a technical issue. Could you repeat that?';
         setTranscript((prev) => [
@@ -315,7 +340,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           { speaker: 'examiner', text: errorText, timestamp: Date.now() },
         ]);
 
-        // Try to speak the error via fallback
         setState('speaking');
         await playTTS(errorText);
 
@@ -339,20 +363,21 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     }
   }, []);
 
-  // We define startListeningInternal as a ref-based function so it can be
-  // called from within processUserSpeech without circular dependency issues.
+  // Ref-based function to avoid circular dependency
   const startListeningInternalRef = useRef<() => void>(() => {});
 
   const startListeningInternal = useCallback(() => {
     startListeningInternalRef.current();
   }, []);
 
-  // Initialise the actual implementation
   useEffect(() => {
     startListeningInternalRef.current = () => {
-      if (!browserSupported) return;
+      if (!browserSupported) {
+        console.warn('[VoiceSession] Browser does not support SpeechRecognition');
+        return;
+      }
 
-      // Reset accumulated final transcript for this listening round
+      console.log('[VoiceSession] Starting speech recognition...');
       finalTranscriptAccumRef.current = '';
       setInterimTranscript('');
 
@@ -365,6 +390,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       recognition.lang = 'en-GB';
 
       recognition.onstart = () => {
+        console.log('[VoiceSession] SpeechRecognition started');
         startMicMeter();
       };
 
@@ -375,7 +401,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
           const text = result[0].transcript;
-
           if (result.isFinal) {
             finalChunk += text;
           } else {
@@ -387,14 +412,13 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           finalTranscriptAccumRef.current += finalChunk;
         }
 
-        // Show current interim + accumulated final as the gray text
         const display = finalTranscriptAccumRef.current + interim;
         setInterimTranscript(display);
 
-        // Reset silence timer on any speech activity
+        // Reset silence timer — after 2s of silence, stop recognition
         clearSilenceTimer();
         silenceTimerRef.current = setTimeout(() => {
-          // Silence detected — stop recognition
+          console.log('[VoiceSession] 2s silence detected, stopping recognition');
           if (recognitionRef.current) {
             recognitionRef.current.stop();
           }
@@ -402,14 +426,14 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       };
 
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        // 'aborted' and 'no-speech' are expected when stopping
         if (event.error === 'aborted' || event.error === 'no-speech') {
           return;
         }
-        console.error('SpeechRecognition error:', event.error);
+        console.error('[VoiceSession] SpeechRecognition error:', event.error);
       };
 
       recognition.onend = () => {
+        console.log('[VoiceSession] SpeechRecognition ended');
         clearSilenceTimer();
         stopMicMeter();
 
@@ -417,9 +441,10 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         recognitionRef.current = null;
 
         if (finalText && isSessionActiveRef.current) {
+          console.log('[VoiceSession] Got final text:', finalText.substring(0, 50) + '...');
           processUserSpeech(finalText);
         } else if (isSessionActiveRef.current && stateRef.current === 'listening') {
-          // No speech detected — restart recognition
+          console.log('[VoiceSession] No speech detected, restarting recognition');
           startListeningInternalRef.current();
         }
       };
@@ -429,7 +454,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       try {
         recognition.start();
       } catch (err) {
-        console.error('Failed to start SpeechRecognition:', err);
+        console.error('[VoiceSession] Failed to start SpeechRecognition:', err);
       }
     };
   }, [browserSupported, clearSilenceTimer, startMicMeter, stopMicMeter, processUserSpeech]);
@@ -450,17 +475,25 @@ export function useVoiceSession(): UseVoiceSessionReturn {
 
   const startSession = useCallback(
     async (ticketType: string) => {
-      // Reset state
+      // Reset
       messagesRef.current = [];
       ticketTypeRef.current = ticketType;
       isSessionActiveRef.current = true;
       setTranscript([]);
       setInterimTranscript('');
+      setLastError(null);
       setState('processing');
 
+      // Pre-create AudioContext NOW, on user gesture, so it won't be suspended
       try {
-        // Get the opening question — send an initial user message to satisfy
-        // the API's requirement for at least one user message
+        await ensureAudioContext();
+        console.log('[VoiceSession] AudioContext ready');
+      } catch (err) {
+        console.error('[VoiceSession] Failed to create AudioContext:', err);
+      }
+
+      try {
+        // Get opening question from Claude
         const initialMessages: Message[] = [
           {
             role: 'user',
@@ -469,6 +502,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           },
         ];
 
+        console.log('[VoiceSession] Calling /api/chat for opening question...');
         const chatRes = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -479,25 +513,26 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         });
 
         if (!chatRes.ok) {
-          throw new Error(`Chat API ${chatRes.status}`);
+          throw new Error(`Chat API returned ${chatRes.status}`);
         }
 
         const { text: openingText } = await chatRes.json();
+        console.log('[VoiceSession] Got opening text:', openingText.substring(0, 80) + '...');
 
-        // Store the initial exchange in messages
         messagesRef.current = [
           ...initialMessages,
           { role: 'assistant', content: openingText },
         ];
 
-        // Add to transcript
         setTranscript([
           { speaker: 'examiner', text: openingText, timestamp: Date.now() },
         ]);
 
         // Speak the opening question
         setState('speaking');
+        console.log('[VoiceSession] Playing opening TTS...');
         await playTTS(openingText);
+        console.log('[VoiceSession] Opening TTS complete, starting to listen...');
 
         // After speaking, start listening
         if (isSessionActiveRef.current) {
@@ -505,27 +540,28 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           startListeningInternal();
         }
       } catch (err) {
-        console.error('startSession error:', err);
+        const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+        console.error('[VoiceSession] startSession error:', errorMsg);
         setState('idle');
         isSessionActiveRef.current = false;
+        setLastError(errorMsg);
 
-        const errorText =
-          'I apologise, there was a technical issue starting the examination. Please try again.';
         setTranscript([
-          { speaker: 'examiner', text: errorText, timestamp: Date.now() },
+          {
+            speaker: 'examiner',
+            text: 'I apologise, there was a technical issue starting the examination. Please try again.',
+            timestamp: Date.now(),
+          },
         ]);
       }
     },
-    [playTTS, startListeningInternal]
+    [playTTS, startListeningInternal, ensureAudioContext]
   );
 
   const endSession = useCallback(() => {
     isSessionActiveRef.current = false;
-
-    // Stop everything
     stopListeningInternal();
 
-    // Stop any playing audio
     if (sourceNodeRef.current) {
       try {
         sourceNodeRef.current.stop();
@@ -536,7 +572,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       sourceNodeRef.current = null;
     }
 
-    // Cancel speech synthesis fallback if running
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -547,10 +582,9 @@ export function useVoiceSession(): UseVoiceSessionReturn {
 
   const toggleMic = useCallback(() => {
     if (stateRef.current === 'listening') {
-      // Stop listening and process whatever we have
       clearSilenceTimer();
       if (recognitionRef.current) {
-        recognitionRef.current.stop(); // will trigger onend -> processUserSpeech
+        recognitionRef.current.stop();
       }
     } else if (stateRef.current === 'idle' && isSessionActiveRef.current) {
       setState('listening');
@@ -565,13 +599,8 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   useEffect(() => {
     return () => {
       isSessionActiveRef.current = false;
-
-      if (silenceTimerRef.current) {
-        clearTimeout(silenceTimerRef.current);
-      }
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      if (recognitionRef.current) recognitionRef.current.abort();
       if (sourceNodeRef.current) {
         try {
           sourceNodeRef.current.stop();
@@ -583,15 +612,9 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         audioContextRef.current.close().catch(() => {});
       }
       stopMicMeter();
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     };
   }, [stopMicMeter]);
-
-  // ------------------------------------------------------------------
-  // Return
-  // ------------------------------------------------------------------
 
   return {
     state,
@@ -603,5 +626,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     analyserNode,
     micLevel,
     browserSupported,
+    lastError,
   };
 }

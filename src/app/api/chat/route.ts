@@ -41,19 +41,25 @@ PERSONALITY:
 Start by introducing yourself briefly and asking your first question.`;
 
 export async function POST(req: Request) {
-  const { messages, ticketType } = await req.json();
+  try {
+    const { messages, ticketType } = await req.json();
 
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1024,
-    system: getSystemPrompt(ticketType || "OOW Unlimited"),
-    messages,
-  });
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      system: getSystemPrompt(ticketType || "OOW Unlimited"),
+      messages,
+    });
 
-  const text = response.content
-    .filter((block: any) => block.type === "text")
-    .map((block: any) => block.text)
-    .join("");
+    const text = response.content
+      .filter((block: any) => block.type === "text")
+      .map((block: any) => block.text)
+      .join("");
 
-  return Response.json({ text });
+    return Response.json({ text });
+  } catch (err) {
+    console.error("Chat API error:", err);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return Response.json({ error: message }, { status: 500 });
+  }
 }

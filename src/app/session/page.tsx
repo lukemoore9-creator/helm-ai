@@ -60,6 +60,7 @@ function SessionInner() {
     analyserNode,
     micLevel,
     browserSupported,
+    lastError,
   } = useVoiceSession();
 
   const [hasStarted, setHasStarted] = useState(false);
@@ -202,6 +203,14 @@ function SessionInner() {
         <p className="mt-2 font-mono text-sm tabular-nums text-[#9CA3AF]">
           {formatTime(elapsed)}
         </p>
+
+        {/* Error banner */}
+        {lastError && (
+          <div className="mt-4 flex max-w-md items-start gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-4 py-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#EF4444]" />
+            <p className="text-sm text-[#991B1B]">{lastError}</p>
+          </div>
+        )}
       </main>
 
       {/* ── Transcript panel ── */}
