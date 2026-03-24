@@ -1,0 +1,132 @@
+[
+  {
+    "id": "colregs-001",
+    "question": "What actions should be taken when two power-driven vessels are meeting head-on?",
+    "key_points": [
+      "Rule 14 applies — head-on situation",
+      "Each vessel shall alter course to starboard",
+      "Pass port to port"
+    ],
+    "follow_ups": [
+      "What if the other vessel doesn't alter?",
+      "At what angle does a head-on situation become a crossing situation?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should reference Rule 14 specifically. Common mistake: forgetting that this rule applies when vessels are in sight of one another."
+  },
+  {
+    "id": "colregs-002",
+    "question": "A power-driven vessel is crossing from your starboard side. What are your obligations?",
+    "key_points": [
+      "Rule 15 — crossing situation",
+      "You are the give-way vessel when the other is on your starboard side",
+      "Avoid crossing ahead of the other vessel",
+      "Rule 16 — take early and substantial action"
+    ],
+    "follow_ups": [
+      "What should the stand-on vessel do if the give-way vessel fails to act?",
+      "When does Rule 17(b) permit the stand-on vessel to take action?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Ensure candidates understand the starboard-side priority rule. They should explain the difference between give-way and stand-on obligations clearly."
+  },
+  {
+    "id": "colregs-003",
+    "question": "Describe the lights and shapes displayed by a vessel restricted in her ability to manoeuvre.",
+    "key_points": [
+      "Rule 27(b) applies",
+      "Three all-round lights in a vertical line: red-white-red",
+      "By day: ball-diamond-ball shape in a vertical line",
+      "Masthead, sidelights and sternlight when making way"
+    ],
+    "follow_ups": [
+      "How do these differ from a vessel not under command?",
+      "Give three examples of vessels restricted in their ability to manoeuvre."
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates often confuse RAM with NUC lights. Key distinction: NUC shows two red all-round lights, RAM shows red-white-red. Examples from Rule 3(g) should be cited."
+  },
+  {
+    "id": "colregs-004",
+    "question": "What constitutes a narrow channel under the COLREGs and what are the obligations of vessels navigating in one?",
+    "key_points": [
+      "Rule 9 governs narrow channels",
+      "Keep as near to the outer limit of the channel on the starboard side as is safe and practicable",
+      "Vessels less than 20m or sailing vessels shall not impede vessels that can only navigate within the channel",
+      "Overtaking in a narrow channel requires agreement via sound signals"
+    ],
+    "follow_ups": [
+      "What sound signals are used for overtaking in a narrow channel?",
+      "Does Rule 9 override Rule 15 in a crossing situation within a narrow channel?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Candidates should understand the hierarchy of rules. The 'shall not impede' obligation in Rule 9(b) and (c) is distinct from give-way obligations. Strong candidates will discuss the interplay between Rules 9 and 15."
+  },
+  {
+    "id": "colregs-005",
+    "question": "What is a safe speed and what factors must be taken into account when determining it?",
+    "key_points": [
+      "Rule 6 defines safe speed",
+      "Must allow proper and effective action to avoid collision",
+      "Must allow stopping within an appropriate distance",
+      "Factors include visibility, traffic density, manoeuvrability, background lights, wind/sea/current, draught vs available depth",
+      "Additional factors when radar is available: characteristics and limitations of radar, sea state effects on detection, effect of vessel's own activities on radar"
+    ],
+    "follow_ups": [
+      "How does radar availability affect determination of safe speed?",
+      "Can a vessel ever be considered to be proceeding at a safe speed while at full ahead?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Rule 6 lists factors for all vessels and additional factors for vessels with operational radar. Candidates should be able to list at least four factors from each category."
+  },
+  {
+    "id": "colregs-006",
+    "question": "Describe the fog signals required by a power-driven vessel making way through the water in restricted visibility.",
+    "key_points": [
+      "Rule 35(a) applies",
+      "One prolonged blast at intervals of not more than 2 minutes",
+      "A prolonged blast is 4 to 6 seconds duration",
+      "Signal is made by whistle"
+    ],
+    "follow_ups": [
+      "How does the signal change if the vessel is underway but stopped and not making way?",
+      "What signal would a vessel not under command make in restricted visibility?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates frequently confuse 'underway but not making way' (two prolonged blasts) with 'making way' (one prolonged blast). Emphasise the distinction."
+  },
+  {
+    "id": "colregs-007",
+    "question": "A vessel is overtaking another in open waters. Describe the responsibilities of each vessel.",
+    "key_points": [
+      "Rule 13 — overtaking situation",
+      "Overtaking vessel is the give-way vessel",
+      "Coming up from more than 22.5 degrees abaft the beam",
+      "The obligation remains until finally past and clear",
+      "If in doubt whether overtaking or crossing, assume overtaking"
+    ],
+    "follow_ups": [
+      "Can the overtaking vessel subsequently become a crossing vessel if the situation changes?",
+      "What lights would you see to determine you are overtaking?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Rule 13(d) is critical — once an overtaking vessel, always an overtaking vessel for that encounter. Candidates should note the 22.5 degree sector and reference seeing only the sternlight."
+  },
+  {
+    "id": "colregs-008",
+    "question": "Explain the responsibilities between a sailing vessel and a vessel engaged in fishing when risk of collision exists.",
+    "key_points": [
+      "Rule 18 — responsibilities between vessels",
+      "A power-driven vessel shall keep out of the way of a sailing vessel and a vessel engaged in fishing",
+      "A sailing vessel shall keep out of the way of a vessel engaged in fishing",
+      "The fishing vessel has priority as it is more restricted in manoeuvrability",
+      "These rules do not apply in narrow channels, TSS, or restricted visibility"
+    ],
+    "follow_ups": [
+      "What constitutes 'engaged in fishing' under the COLREGs?",
+      "Does a vessel trolling with lines count as engaged in fishing?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Rule 3(d) defines fishing as using apparatus that restricts manoeuvrability — trolling lines do not qualify. Candidates should know the full hierarchy: NUC > RAM > CBD > fishing > sailing > power-driven."
+  }
+]

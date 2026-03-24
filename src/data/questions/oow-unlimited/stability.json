@@ -1,0 +1,93 @@
+[
+  {
+    "id": "stability-001",
+    "question": "Define and explain the relationship between GM, GZ, and the righting lever curve.",
+    "key_points": [
+      "GM (metacentric height) is the distance from G (centre of gravity) to M (metacentre)",
+      "GM is a measure of initial stability — positive GM means the vessel is stable",
+      "GZ (righting lever) is the horizontal distance between the lines of action of gravity and buoyancy at any angle of heel",
+      "GZ = GM x sin(theta) for small angles (up to about 10 degrees)",
+      "The GZ curve plots righting lever against angle of heel — area under the curve represents dynamic stability",
+      "Maximum GZ angle and range of positive stability are critical stability criteria"
+    ],
+    "follow_ups": [
+      "What effect does a free surface have on GM?",
+      "How does the GZ curve change when cargo is loaded at a high tier?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates must be able to sketch and interpret a GZ curve. Key values: initial GM (slope at origin), maximum GZ, angle of maximum GZ, range of stability, and angle of vanishing stability. Free surface effect and its virtual rise of G should be explained."
+  },
+  {
+    "id": "stability-002",
+    "question": "Explain the free surface effect and how it impacts vessel stability.",
+    "key_points": [
+      "Liquid in a partially filled tank shifts to the low side when the vessel heels",
+      "This effectively raises the centre of gravity (G), creating a virtual G higher than actual G",
+      "Free surface correction (FSC) = (rho x i) / displacement, where i is the second moment of area of the tank surface",
+      "Wider tanks have a greater free surface effect (proportional to breadth cubed)",
+      "Reduces effective GM (GM fluid = GM solid - FSC)",
+      "Mitigated by pressing up tanks, longitudinal subdivisions, or minimising the number of slack tanks"
+    ],
+    "follow_ups": [
+      "Does the quantity of liquid in the tank affect the free surface moment?",
+      "How do longitudinal baffles reduce free surface effect?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Common misconception: the free surface moment depends on tank geometry, not the quantity of liquid (for wall-sided tanks). Longitudinal subdivisions reduce FSE dramatically — dividing a tank in two reduces it by a factor of four (breadth cubed relationship)."
+  },
+  {
+    "id": "stability-003",
+    "question": "What are the IMO intact stability criteria for a cargo vessel?",
+    "key_points": [
+      "IMO Resolution A.749(18) and the 2008 IS Code (Part A mandatory, Part B recommendatory)",
+      "Area under GZ curve to 30 degrees >= 0.055 metre-radians",
+      "Area under GZ curve to 40 degrees (or angle of flooding if less) >= 0.09 metre-radians",
+      "Area between 30 and 40 degrees >= 0.03 metre-radians",
+      "Maximum GZ at 30 degrees or above >= 0.20 metres",
+      "Angle of maximum GZ should preferably exceed 25 degrees",
+      "Initial GM >= 0.15 metres"
+    ],
+    "follow_ups": [
+      "What additional criteria apply to vessels carrying grain?",
+      "How do weather criteria (severe wind and rolling) feature in the IS Code?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Candidates should know the numerical values and understand their significance. The weather criterion (Regulation 2.3 of the IS Code) is particularly important — it assesses the vessel's ability to withstand the combined effect of beam wind and rolling. Grain stability requires a special angle of heel calculation."
+  },
+  {
+    "id": "stability-004",
+    "question": "Describe how to conduct an inclining experiment and its purpose.",
+    "key_points": [
+      "Purpose: to determine the vessel's lightship displacement and vertical centre of gravity (KG)",
+      "Conducted with the vessel in a known condition — as close to lightship as possible",
+      "Known weights moved transversely across the deck and the resulting heel angle measured with pendulums",
+      "GM = (w x d) / (W x tan(theta)), where w = weight moved, d = distance, W = displacement",
+      "KG = KM - GM (KM obtained from hydrostatic data for the measured draught)",
+      "Must be conducted in calm water with mooring lines slack and minimal free surfaces"
+    ],
+    "follow_ups": [
+      "When is an inclining experiment required to be repeated?",
+      "What corrections must be applied to the inclining experiment results?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Required on completion of build and after major modifications. Candidates should know the practical arrangements: at least two pendulums, weights typically 1-2% of displacement, calm conditions, moorings slack, no personnel movement during readings. The lightweight survey must be conducted simultaneously."
+  },
+  {
+    "id": "stability-005",
+    "question": "What is the effect on stability when a weight is added above the keel?",
+    "key_points": [
+      "Adding weight increases displacement — KM changes based on hydrostatic data",
+      "If weight added above G: G rises — GM decreases, stability reduces",
+      "If weight added below G: G falls — GM increases, stability improves",
+      "Shift of G calculated using: GG1 = (w x d) / (W + w), where d is distance from G to the loading point",
+      "Mean draught increases — must check trim effects if loading is not at the centre of flotation",
+      "Must verify stability criteria are still met after loading"
+    ],
+    "follow_ups": [
+      "How does adding weight at the vessel's side affect the list?",
+      "What is the difference between list and loll?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates should understand the distinction between list (caused by G being off-centreline) and loll (caused by negative GM at small angles with positive stability at larger angles). Correcting a loll by ballasting on the high side is dangerous — low-point ballasting is the correct approach."
+  }
+]

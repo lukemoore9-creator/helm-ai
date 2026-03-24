@@ -1,0 +1,108 @@
+[
+  {
+    "id": "safety-001",
+    "question": "Describe the immediate actions to be taken upon discovering a fire onboard.",
+    "key_points": [
+      "Raise the alarm immediately",
+      "Assess the situation — type and location of fire",
+      "Close ventilation to the affected area",
+      "Muster crew and assign fire parties as per the muster list",
+      "Identify the class of fire and select appropriate extinguishing medium",
+      "Boundary cooling on adjacent spaces"
+    ],
+    "follow_ups": [
+      "What are the different classes of fire and which extinguishing media are suitable for each?",
+      "When would you consider using the fixed CO2 system?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates must demonstrate a systematic approach. SOLAS Chapter II-2 governs fire safety. The sequence of alarm-assess-contain-fight is critical. Check understanding of the fire triangle and why ventilation control is essential."
+  },
+  {
+    "id": "safety-002",
+    "question": "What are the requirements for lifeboat drills under SOLAS, and what must they include?",
+    "key_points": [
+      "SOLAS Regulation III/19 — drills required monthly and within 24 hours of leaving port if more than 25% of crew have not participated in a drill on that vessel in the previous month",
+      "Each crew member must participate in at least one abandon ship drill per month",
+      "Drills include mustering, checking immersion suits and lifejackets, lifeboat preparation and swinging out",
+      "Starting and operating the lifeboat engine",
+      "Operating davits used for launching life rafts"
+    ],
+    "follow_ups": [
+      "What additional requirements apply to passenger vessels?",
+      "What items must be checked in a lifeboat during a weekly inspection?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should cite SOLAS III/19 and be familiar with the LSA Code. The 24-hour requirement for new crew joining is frequently tested. Weekly inspections under Regulation III/20 cover visual checks of survival craft equipment."
+  },
+  {
+    "id": "safety-003",
+    "question": "Explain the procedures for man overboard recovery, including the immediate actions and manoeuvres available.",
+    "key_points": [
+      "Immediate actions: shout 'Man Overboard', throw lifebuoy, post lookout, press MOB button on GPS, sound alarm",
+      "Note time, position, and conditions",
+      "Williamson Turn: used when person's position is uncertain or in restricted visibility — alters 60 degrees, then hard over opposite to return on reciprocal",
+      "Anderson Turn (single turn): quickest return, best for immediate recovery in good visibility",
+      "Scharnow Turn: for delayed recovery — used when time has passed since person fell overboard"
+    ],
+    "follow_ups": [
+      "Which manoeuvre is best in restricted visibility and why?",
+      "How would you coordinate with other vessels and shore authorities?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates must know at least two recovery manoeuvres and when each is appropriate. The Williamson turn is preferred in restricted visibility because it brings the vessel back on the reciprocal course. Assessment should include use of IAMSAR Vol III procedures."
+  },
+  {
+    "id": "safety-004",
+    "question": "What is the International Safety Management (ISM) Code and what are the responsibilities of the Designated Person Ashore (DPA)?",
+    "key_points": [
+      "ISM Code is mandatory under SOLAS Chapter IX",
+      "Requires companies to establish a Safety Management System (SMS)",
+      "The DPA provides a link between ship and shore management at the highest level",
+      "DPA monitors safety and pollution prevention aspects of each ship",
+      "DPA ensures adequate resources and shore-based support are provided",
+      "Ships carry a Safety Management Certificate (SMC), companies a Document of Compliance (DOC)"
+    ],
+    "follow_ups": [
+      "What happens if a vessel's SMC is withdrawn?",
+      "How does the ISM Code address non-conformities and corrective actions?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Candidates should understand the practical implications of ISM, not just recite requirements. The DPA must have direct access to the highest level of management. Discuss how the SMS integrates with daily operations."
+  },
+  {
+    "id": "safety-005",
+    "question": "Describe the enclosed space entry procedures and the hazards associated with enclosed spaces on board.",
+    "key_points": [
+      "Enclosed spaces include ballast tanks, cargo holds, pump rooms, cofferdams, void spaces",
+      "Hazards: oxygen deficiency, toxic gases (H2S, CO), flammable atmospheres",
+      "Procedures: risk assessment, permit to work system, atmosphere testing before and during entry",
+      "Minimum 20.9% oxygen required — must also test for toxic and flammable gases",
+      "Trained rescue team standing by at the entrance with SCBA",
+      "Continuous ventilation during entry"
+    ],
+    "follow_ups": [
+      "What is the most common cause of death in enclosed space incidents?",
+      "Under what circumstances would you refuse to allow entry?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "SOLAS Regulation XI-1/7 and MSC.1/Circ.1401 apply. The most common cause of multiple fatalities is untrained rescue attempts. Candidates must emphasise that atmosphere testing alone is insufficient — continuous monitoring and rescue arrangements are essential."
+  },
+  {
+    "id": "safety-006",
+    "question": "What are the requirements and procedures for conducting a ship security assessment under the ISPS Code?",
+    "key_points": [
+      "ISPS Code Part A and B — mandatory under SOLAS Chapter XI-2",
+      "Ship Security Assessment (SSA) identifies vulnerabilities and threats",
+      "Conducted by the Company Security Officer (CSO) or contracted Recognised Security Organisation (RSO)",
+      "Assessment covers physical security, access control, cargo handling, monitoring, and communication",
+      "Results feed into the Ship Security Plan (SSP)",
+      "Three security levels: Level 1 (normal), Level 2 (heightened), Level 3 (exceptional)"
+    ],
+    "follow_ups": [
+      "What is the role of the Ship Security Officer (SSO)?",
+      "What triggers a move from Security Level 1 to Level 2?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Candidates should understand that security levels are set by the Contracting Government, not by the ship. The SSO is appointed by the company and must hold an approved ISPS certificate. Declaration of Security (DoS) between ship and port should be discussed."
+  }
+]

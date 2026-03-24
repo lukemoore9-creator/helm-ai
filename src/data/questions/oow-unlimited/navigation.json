@@ -1,0 +1,121 @@
+[
+  {
+    "id": "navigation-001",
+    "question": "Explain how to determine your position using a three-point fix with compass bearings.",
+    "key_points": [
+      "Take simultaneous bearings of three identifiable charted objects",
+      "Objects should be well-spaced (ideally 60-120 degrees apart)",
+      "Apply compass error (variation and deviation) to convert compass bearings to true bearings",
+      "Plot reciprocal bearings on the chart from each object",
+      "Position is where the three lines intersect — a small 'cocked hat' indicates good accuracy"
+    ],
+    "follow_ups": [
+      "What does a large cocked hat indicate?",
+      "If the cocked hat falls near a danger, where should you assume your position to be?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates must understand compass error application. When the cocked hat is near a danger, always assume the position nearest the danger. Discuss systematic vs random errors."
+  },
+  {
+    "id": "navigation-002",
+    "question": "Describe the principle and limitations of GPS as a primary means of position fixing.",
+    "key_points": [
+      "Satellite ranging system using time difference measurements from at least 4 satellites",
+      "Provides continuous position, course, and speed data",
+      "Accuracy typically 5-15 metres with civilian signals",
+      "Limitations: signal jamming and spoofing vulnerability, multipath errors near structures, satellite geometry (HDOP/GDOP), ionospheric and tropospheric delays",
+      "Should always be cross-checked with other means of position fixing"
+    ],
+    "follow_ups": [
+      "What is HDOP and why does it matter?",
+      "How would you detect GPS spoofing?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should not treat GPS as infallible. Look for awareness of RAIM, integrity monitoring, and the importance of cross-referencing with radar, visual bearings, or echo sounder. IMO Performance Standards for GPS should be mentioned."
+  },
+  {
+    "id": "navigation-003",
+    "question": "How do you calculate the compass error using a transit bearing?",
+    "key_points": [
+      "Identify two charted objects in transit (in line)",
+      "Measure the true bearing of the transit from the chart",
+      "Observe the compass bearing at the moment the objects are in line",
+      "Compass error = true bearing minus compass bearing",
+      "Error is named East if compass bearing is less than true, West if greater"
+    ],
+    "follow_ups": [
+      "How would you use an amplitude of the sun to check compass error?",
+      "What is the difference between variation and deviation?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "This is a fundamental skill. Candidates must be able to apply the CADET rule (Compass ADd East for True). Transits provide the most accurate means of checking compass error."
+  },
+  {
+    "id": "navigation-004",
+    "question": "Explain the principles of great circle sailing and when it should be used over rhumb line sailing.",
+    "key_points": [
+      "A great circle is the shortest distance between two points on the earth's surface",
+      "Great circle tracks cross each meridian at a different angle — requiring frequent course changes",
+      "Most beneficial on east-west passages in higher latitudes",
+      "Rhumb line crosses all meridians at the same angle — constant course but longer distance",
+      "In practice, composite great circle sailing limits the maximum latitude reached"
+    ],
+    "follow_ups": [
+      "When would a great circle route not be advisable?",
+      "Explain composite great circle sailing and when it would be used."
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Candidates should be able to calculate initial and final great circle courses using spherical trigonometry or Napier's rules. Discuss the vertex and when the great circle route might enter ice zones or restricted areas."
+  },
+  {
+    "id": "navigation-005",
+    "question": "What is a traffic separation scheme and what are a vessel's obligations when using one?",
+    "key_points": [
+      "Defined in Rule 10 of the COLREGs",
+      "Vessels shall proceed in the appropriate traffic lane in the general direction of traffic flow",
+      "Joining or leaving at the termination of a lane, or at as small an angle as practicable when entering from the side",
+      "Crossing traffic shall do so at right angles to the direction of flow",
+      "Vessels not using the TSS shall avoid it by as wide a margin as practicable"
+    ],
+    "follow_ups": [
+      "Which vessels are exempt from Rule 10?",
+      "What are the obligations regarding the inshore traffic zone?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should know that Rule 10 does not relieve any vessel of obligations under other rules. Fishing vessels and vessels less than 20m may use the inshore traffic zone. Anchoring in a TSS is generally prohibited."
+  },
+  {
+    "id": "navigation-006",
+    "question": "Describe how to use radar for collision avoidance, including plotting a target to determine CPA and TCPA.",
+    "key_points": [
+      "Plot target at regular intervals (typically 6-minute intervals) on a plotting sheet",
+      "Determine relative course and speed from the relative motion plot",
+      "CPA is the closest point of the relative track to own ship's position",
+      "TCPA is calculated from the rate of relative motion toward the CPA",
+      "True course and speed of target derived by applying own ship's course and speed vector"
+    ],
+    "follow_ups": [
+      "What are the limitations of ARPA?",
+      "How would you determine the effect of an alteration of course on CPA using the plotting sheet?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Candidates must demonstrate practical radar plotting competence. They should understand relative vs true motion displays, the difference between relative and true vectors, and know how to construct a trial manoeuvre on the plotting sheet."
+  },
+  {
+    "id": "navigation-007",
+    "question": "Explain how tidal streams affect passage planning and what resources are used to predict them.",
+    "key_points": [
+      "Tidal stream atlases show hourly set and drift relative to HW at a standard port",
+      "Tidal diamonds on charts reference tabulated data for the same purpose",
+      "Estimated position must account for tidal stream set and drift",
+      "Counter-current techniques can reduce fuel consumption",
+      "Springs and neaps affect stream strength — interpolation may be required"
+    ],
+    "follow_ups": [
+      "How do you apply a tidal stream vector to your DR position?",
+      "What is the difference between set and drift?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should be able to work with tidal diamonds and atlases practically. They must understand the concept of an estimated position (EP) vs dead reckoning (DR) position and when each is used."
+  }
+]

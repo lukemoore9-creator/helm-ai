@@ -1,0 +1,88 @@
+[
+  {
+    "id": "solas-001",
+    "question": "What is the structure of the SOLAS Convention and what are its main chapters?",
+    "key_points": [
+      "SOLAS is the International Convention for the Safety of Life at Sea — adopted by IMO",
+      "Current version is SOLAS 1974 as amended (tacit amendment procedure)",
+      "Key chapters: I (General), II-1 (Subdivision/Stability), II-2 (Fire), III (LSA), IV (Radio), V (Safety of Navigation), VI (Cargo), VII (Dangerous Goods), IX (ISM), XI-1 (Special Measures), XI-2 (Security), XII (Bulk Carriers)",
+      "Chapter V applies to all vessels on all voyages (including small craft)",
+      "Amendments enter into force unless a specified number of contracting governments object"
+    ],
+    "follow_ups": [
+      "What is the tacit amendment procedure and why was it introduced?",
+      "Which chapters apply to cargo vessels under 500 GT?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates should have a working knowledge of the main chapters and their scope. The tacit acceptance procedure (SOLAS Article VIII) was key to enabling frequent updates. Chapter V Regulation 19 (carriage requirements for navigation equipment) is commonly examined."
+  },
+  {
+    "id": "solas-002",
+    "question": "Explain the requirements for watertight integrity and subdivision under SOLAS Chapter II-1.",
+    "key_points": [
+      "Vessels must survive flooding of one or more compartments depending on length and type",
+      "Subdivision index 'A' must be greater than or equal to required index 'R'",
+      "Watertight doors must be tested regularly and logged",
+      "Doors below the bulkhead deck must be sliding type, operable from a central control point and locally",
+      "Regular drills for operating watertight doors — weekly at sea"
+    ],
+    "follow_ups": [
+      "What is the probabilistic method of assessing damage stability?",
+      "Under what circumstances may watertight doors remain open at sea?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "The probabilistic damage stability framework replaced deterministic methods for new vessels. Candidates should understand the concepts of attained (A) and required (R) subdivision indices. Regulation II-1/22 governs watertight door operation."
+  },
+  {
+    "id": "solas-003",
+    "question": "What are the SOLAS requirements for voyage data recorders (VDR)?",
+    "key_points": [
+      "SOLAS Chapter V Regulation 20 mandates VDR carriage",
+      "Required on passenger ships and cargo ships of 3000 GT and above built after July 2002",
+      "Records a minimum of 12 hours of data including radar, audio, AIS, position, speed, heading",
+      "Data capsule must be retrievable and float free",
+      "Annual performance testing required by approved testing facility",
+      "Simplified VDR (S-VDR) accepted for certain existing cargo ships"
+    ],
+    "follow_ups": [
+      "What is the difference between a VDR and an S-VDR?",
+      "What should the master do with VDR data following an incident?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "MSC.333(90) sets VDR performance standards. After an incident, the master should take steps to preserve VDR data (typically by removing the data capsule or securing the recording). Candidates should know the data items recorded."
+  },
+  {
+    "id": "solas-004",
+    "question": "Describe the SOLAS requirements for navigation equipment carriage on vessels of 3000 GT and above.",
+    "key_points": [
+      "SOLAS Chapter V Regulation 19.2 specifies carriage requirements by vessel size",
+      "Vessels >= 3000 GT: two radar (one 3cm, one 10cm band), ARPA or equivalent, AIS, ECDIS, echo sounder, speed and distance indicator, GNSS receiver, gyro compass, magnetic compass",
+      "ECDIS became mandatory in a phased implementation from 2012 to 2018 depending on vessel type",
+      "Back-up arrangements for ECDIS required (paper charts or independent ECDIS)",
+      "All equipment must meet IMO performance standards"
+    ],
+    "follow_ups": [
+      "What are the back-up requirements for ECDIS?",
+      "How does the equipment carriage differ for vessels between 500 and 3000 GT?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should be familiar with the phased ECDIS implementation timeline and the different requirements for new vs existing vessels. The dual-radar requirement and AIS class A obligations are frequently tested."
+  },
+  {
+    "id": "solas-005",
+    "question": "What are the requirements for a ship's passage plan under SOLAS Chapter V Regulation 34?",
+    "key_points": [
+      "The voyage shall be planned in advance using appropriate charts and nautical publications",
+      "Regulation 34 read together with Regulation 28 (recording of navigational activities)",
+      "IMO Resolution A.893(21) provides guidelines for voyage planning",
+      "Four stages: appraisal, planning, execution, monitoring",
+      "Must consider weather routing, traffic density, safe speed, contingency anchorages, reporting requirements"
+    ],
+    "follow_ups": [
+      "Who is responsible for approving the passage plan?",
+      "What should a passage plan contain for a coastal passage through a TSS?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates should be able to describe each of the four stages in detail. The master approves the plan but the OOW executes and monitors it. Common omission: contingency planning for equipment failure or weather deterioration."
+  }
+]

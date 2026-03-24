@@ -6,7 +6,7 @@ import { Mic, MicOff, PhoneOff, AlertTriangle, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { Orb } from '@/components/voice/Orb';
 import { TranscriptPanel } from '@/components/voice/TranscriptPanel';
-import { useVoiceSession } from '@/hooks/useVoiceSession';
+import { useVoiceSession } from '@/lib/hooks/useVoiceSession';
 
 // ---------------------------------------------------------------------------
 // Ticket name lookup (hardcoded, no DB)

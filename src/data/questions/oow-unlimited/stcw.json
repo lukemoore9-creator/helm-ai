@@ -1,0 +1,92 @@
+[
+  {
+    "id": "stcw-001",
+    "question": "What is the STCW Convention and what are its main requirements for an OOW certificate?",
+    "key_points": [
+      "International Convention on Standards of Training, Certification and Watchkeeping for Seafarers, 1978 as amended",
+      "Sets minimum standards for training and certification globally",
+      "OOW (Deck) certification under STCW Regulation II/1",
+      "Requirements: approved seagoing service (12 months), approved training programme, competence demonstrated through examination and assessment",
+      "Manila Amendments 2010 introduced significant updates including rest hours and security training",
+      "Certificate valid for 5 years — requires revalidation with approved sea service and continued professional competence"
+    ],
+    "follow_ups": [
+      "What are the requirements for revalidation of an STCW certificate?",
+      "How does the STCW Code differ from the Convention itself?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates should understand the two-part structure: Convention (Articles and Regulations) and STCW Code (Part A mandatory, Part B recommendatory). The competence tables in the STCW Code Part A define what must be demonstrated. Regulation I/9 covers medical fitness requirements."
+  },
+  {
+    "id": "stcw-002",
+    "question": "Describe the requirements for hours of rest under STCW and the MLC.",
+    "key_points": [
+      "STCW Regulation VIII/1 — fitness for duty, minimum rest hours",
+      "Minimum 10 hours rest in any 24-hour period",
+      "Rest may be divided into no more than two periods, one of which must be at least 6 hours",
+      "Minimum 77 hours rest in any 7-day period",
+      "Exceptions permitted in emergencies — master's discretion for safety of ship",
+      "Records must be maintained and available for inspection — standard format required"
+    ],
+    "follow_ups": [
+      "How do the MLC 2006 requirements differ from STCW rest hour requirements?",
+      "What happens if rest hour violations are found during Port State Control?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "The two-period division of rest is frequently tested. Candidates should know that the hours of rest records must be in the seafarer's working language and English. MLC Regulation 2.3 sets maximum work hours (14h/24h and 72h/7 days) as an alternative framework."
+  },
+  {
+    "id": "stcw-003",
+    "question": "What are the bridge resource management principles and how should they be applied during watchkeeping?",
+    "key_points": [
+      "BRM is part of STCW Code Table A-II/1 competence requirements",
+      "Emphasises teamwork, communication, and situational awareness on the bridge",
+      "Clear allocation of duties among bridge team members",
+      "Use of all available resources: electronic, human, informational",
+      "Challenge and response culture — junior officers empowered to question",
+      "Regular review of passage plan and ship's position by multiple team members"
+    ],
+    "follow_ups": [
+      "How does BRM apply when the master is on the bridge?",
+      "What are the common BRM failures identified in accident investigations?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Accident investigation reports (e.g., MAIB, NTSB) consistently identify poor BRM as a contributing factor. Candidates should discuss how authority gradients can prevent junior officers from raising concerns. The closed-loop communication concept is essential."
+  },
+  {
+    "id": "stcw-004",
+    "question": "What are the STCW requirements for familiarisation and basic safety training for all seafarers?",
+    "key_points": [
+      "STCW Regulation VI/1 — mandatory minimum training for all seafarers",
+      "Four elements: personal survival techniques, fire prevention and firefighting, elementary first aid, personal safety and social responsibilities",
+      "Regulation I/14 — company responsibilities for familiarisation",
+      "New crew must receive shipboard familiarisation before being assigned duties",
+      "Security awareness training (VI/6) added by Manila Amendments",
+      "Certificates must be issued by approved training providers"
+    ],
+    "follow_ups": [
+      "What additional safety training is required for personnel on tankers?",
+      "How does STCW address training requirements for seafarers on ships using IGF Code fuels?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Regulation I/14 familiarisation is a Port State Control focus area — companies must provide ship-specific familiarisation before crew undertake duties. The four basic training elements are often remembered by the acronym FPFF (Fire, Personal survival, First aid, social responsibilities/Familiarisation)."
+  },
+  {
+    "id": "stcw-005",
+    "question": "Explain the STCW requirements for maintaining a proper navigational watch.",
+    "key_points": [
+      "STCW Regulation VIII/2 — watchkeeping arrangements and principles",
+      "OOW shall not hand over the watch if there is reason to believe the relieving officer is unfit for duty",
+      "OOW is the master's representative — responsible for safe navigation during the watch",
+      "Proper lookout shall be maintained at all times (also required by COLREGs Rule 5)",
+      "Watch handover must include: vessel's position, course, speed, navigational hazards, traffic, weather, standing orders, night orders",
+      "OOW shall call the master without hesitation when in doubt about safety"
+    ],
+    "follow_ups": [
+      "Under what circumstances should the OOW call the master?",
+      "What constitutes an unfit condition for taking over a navigational watch?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Section A-VIII/2 Part 3 of the STCW Code provides detailed guidance. The obligation to call the master is critical — candidates should list specific circumstances (restricted visibility, traffic, equipment failure, concern about position, weather, any uncertainty). Fitness includes rest hour compliance."
+  }
+]

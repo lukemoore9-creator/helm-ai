@@ -1,0 +1,110 @@
+[
+  {
+    "id": "bridge-equipment-001",
+    "question": "Describe the main features and operation of ECDIS and the requirements for its use as a primary means of navigation.",
+    "key_points": [
+      "Electronic Chart Display and Information System — IMO Performance Standards MSC.232(82)",
+      "Must use Electronic Navigational Charts (ENCs) from authorised hydrographic offices",
+      "Display must show SENC (System ENC) derived from official ENCs",
+      "Raster Navigational Charts (RNCs) may be used only when ENCs are not available — back-up required",
+      "Must have adequate back-up arrangements: second independent ECDIS or up-to-date paper charts",
+      "Requires type-approved equipment and ECDIS-trained operators (STCW training)"
+    ],
+    "follow_ups": [
+      "What is the difference between ENC and RNC?",
+      "What are the dangers of over-reliance on ECDIS?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should understand that ECDIS is not just a chart plotter — it integrates position, radar overlay, and route monitoring. Common errors: incorrect display settings hiding dangers, failure to update ENCs, over-zoom, and alarm fatigue. IHO S-52 governs display standards. Type-specific training is required."
+  },
+  {
+    "id": "bridge-equipment-002",
+    "question": "Explain the principles and limitations of the magnetic compass.",
+    "key_points": [
+      "Aligns with magnetic north — affected by variation (difference between true and magnetic north)",
+      "Deviation caused by vessel's own magnetic field — varies with heading",
+      "Deviation card must be current and posted near the compass — swung after any significant changes",
+      "Compass error = variation + deviation (algebraic sum)",
+      "Limitations: affected by ferrous metals, electrical equipment, cargo (e.g., steel, magnetic ore)",
+      "Must be sited away from magnetic influences — binnacle contains corrector magnets and Flinders bar"
+    ],
+    "follow_ups": [
+      "When should the compass be re-swung?",
+      "What is the Flinders bar used for and how does it work?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Despite modern electronic navigation, the magnetic compass remains a mandatory carriage requirement (SOLAS V/19). Candidates should know how to read a deviation card and apply corrections using CADET/CDMVT. The compass should be re-swung after significant structural changes, loading of magnetic cargo, long periods on one heading, or drydocking."
+  },
+  {
+    "id": "bridge-equipment-003",
+    "question": "What are the main controls and display modes available on a marine radar?",
+    "key_points": [
+      "Display modes: relative motion (head-up, course-up, north-up) and true motion",
+      "Range scales: from 0.25 nm to 96 nm typically — select appropriate range for the situation",
+      "Gain control: adjusts receiver sensitivity — too high creates clutter, too low misses targets",
+      "Sea clutter (STC): suppresses returns from sea waves — adjust carefully to avoid suppressing small targets",
+      "Rain clutter (FTC): reduces returns from precipitation — use to see through rain",
+      "EBL (Electronic Bearing Line) and VRM (Variable Range Marker) for measuring bearings and distances"
+    ],
+    "follow_ups": [
+      "What are the limitations of radar in detecting small targets?",
+      "How do you identify and deal with radar shadow sectors?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Candidates must demonstrate practical radar operation competence. Over-suppression of sea clutter is a common cause of missed targets. The IMO Performance Standards require minimum detection of certain target sizes. ARPA/target tracking functionality should be understood in terms of acquisition, tracking, and alarm settings."
+  },
+  {
+    "id": "bridge-equipment-004",
+    "question": "Describe the Automatic Identification System (AIS) and its role in navigation and collision avoidance.",
+    "key_points": [
+      "AIS transponder transmits and receives vessel information on VHF frequencies (161.975 and 162.025 MHz)",
+      "Class A (mandatory SOLAS vessels): transmits MMSI, position, COG, SOG, heading, ROT, navigation status, vessel name, type, dimensions, draught, destination, ETA",
+      "Dynamic information updated every 2-10 seconds depending on speed and course change",
+      "Static and voyage-related data transmitted every 6 minutes",
+      "AIS does not replace radar or visual lookout — it supplements them",
+      "Limitations: relies on other vessels having AIS fitted and switched on, data accuracy depends on correct input"
+    ],
+    "follow_ups": [
+      "Under what circumstances may AIS be switched off?",
+      "How does AIS data appear on ECDIS and radar?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "SOLAS V/19.2.4 requires Class A AIS on international voyaging ships >= 300 GT and all passenger ships. Candidates should know that AIS data is only as accurate as the information entered — incorrect draught, destination, or navigation status are common issues. AIS should not be used for collision avoidance in isolation."
+  },
+  {
+    "id": "bridge-equipment-005",
+    "question": "What is the purpose of the echo sounder and what factors affect the accuracy of depth readings?",
+    "key_points": [
+      "Measures depth below the transducer using acoustic pulse timing",
+      "Speed of sound in seawater approximately 1505 m/s — varies with temperature, salinity, and pressure",
+      "Transducer draught must be applied to obtain depth below keel or water depth",
+      "Errors: aeration under the hull, thermocline effects, false echoes from marine life or suspended sediment",
+      "Under-keel clearance monitoring essential in shallow waters",
+      "SOLAS V/19.2.3 requires echo sounder on all vessels >= 300 GT"
+    ],
+    "follow_ups": [
+      "How does the speed of sound in seawater affect accuracy?",
+      "What is the difference between a single-beam and multi-beam echo sounder?"
+    ],
+    "difficulty": "basic",
+    "examiner_notes": "Practical knowledge of echo sounder limitations is essential. Aeration from bow thruster or heavy weather can cause signal loss. Candidates should know how to set the draught offset and understand the difference between depth below keel and charted depth. Comparison with charted depth provides a position check."
+  },
+  {
+    "id": "bridge-equipment-006",
+    "question": "Explain the purpose and operation of a rate of turn indicator and its importance for manoeuvring.",
+    "key_points": [
+      "Measures the angular rate of change of heading in degrees per minute",
+      "Based on gyroscopic principles — senses rotational forces",
+      "Essential for navigating narrow channels, making precise course alterations, and berthing",
+      "SOLAS V/19.2.9 requires ROT indicator for vessels >= 50,000 GT",
+      "Typical display: analogue dial or digital readout showing port/starboard turn rate",
+      "Used in conjunction with rudder angle indicator for assessing vessel response"
+    ],
+    "follow_ups": [
+      "How does the ROT indicator assist during wheel-over points in confined waters?",
+      "What is the relationship between rate of turn and vessel speed?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "ROT information is also transmitted via AIS and displayed on ECDIS. Candidates should understand that ROT is critical for pilotage and confined water navigation — a vessel's turning characteristics change with speed, draught, and trim. The IMO turning circle standards should be referenced."
+  }
+]

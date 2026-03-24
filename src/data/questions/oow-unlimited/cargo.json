@@ -1,0 +1,92 @@
+[
+  {
+    "id": "cargo-001",
+    "question": "What are the key considerations when preparing to load bulk grain cargo?",
+    "key_points": [
+      "International Grain Code (SOLAS Chapter VI Part C) governs grain carriage",
+      "Grain stability calculations must show vessel meets criteria: heel angle due to grain shift not to exceed 12 degrees or deck edge immersion, whichever is less",
+      "Residual dynamic stability (area between heeling arm and GZ curves) must be >= 0.075 metre-radians",
+      "Document of Authorisation must be onboard — certifies vessel approved for grain carriage",
+      "Cargo spaces must be clean, dry, and free from residues of previous cargo",
+      "Fumigation procedures and ventilation requirements must be planned"
+    ],
+    "follow_ups": [
+      "What is grain shift and how is it calculated?",
+      "What are the requirements for trimming and securing grain in partially filled holds?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Candidates should understand volumetric heeling moments and how to use the grain stability booklet. The assumption of a 15-degree void shift (or 25 degrees for filled compartments) is a key concept. Strapping, bundling, and overstowing techniques for partially filled holds should be discussed."
+  },
+  {
+    "id": "cargo-002",
+    "question": "Describe the process of creating a cargo plan and the factors that must be considered.",
+    "key_points": [
+      "Ensure vessel's stability meets IMO criteria throughout the voyage (departure, worst case, arrival)",
+      "Distribute weight to avoid excessive shear forces and bending moments",
+      "Consider compatibility of different cargoes (segregation requirements for dangerous goods)",
+      "Maintain adequate visibility from the bridge (SOLAS V Regulation 22)",
+      "Plan loading sequence to minimise stress on hull",
+      "Allow for fuel, water consumption, and ballast changes during the voyage"
+    ],
+    "follow_ups": [
+      "How do you use the vessel's loading computer?",
+      "What happens if shear force or bending moment limits are exceeded?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should demonstrate practical understanding of cargo planning software and manual calculations. The loading sequence is critical — block loading of a single hold can cause hogging or sagging beyond structural limits. Trim optimisation for fuel efficiency is an increasingly examined topic."
+  },
+  {
+    "id": "cargo-003",
+    "question": "What are the requirements for the carriage of dangerous goods under the IMDG Code?",
+    "key_points": [
+      "IMDG Code is mandatory under SOLAS Chapter VII Part A",
+      "Nine classes of dangerous goods based on hazard type",
+      "Proper shipping name, UN number, packing group, and class must be correctly declared",
+      "Segregation requirements between incompatible classes (away from, separated from, separated by a complete compartment)",
+      "Stowage: on deck vs under deck depending on class and flashpoint",
+      "Dangerous Goods Manifest or stowage plan must be available before departure"
+    ],
+    "follow_ups": [
+      "How are the segregation requirements applied in practice?",
+      "What are the emergency response procedures if a container of Class 3 goods catches fire?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "Candidates should know the nine classes and common examples. The segregation table in the IMDG Code determines minimum separation distances. Documentation requirements include: Dangerous Goods Declaration, container packing certificate, and the Dangerous Goods Manifest. EmS Guide (Emergency Schedules) provides response procedures."
+  },
+  {
+    "id": "cargo-004",
+    "question": "Explain the hazards of liquefaction of bulk cargoes and how they are managed.",
+    "key_points": [
+      "Certain bulk cargoes (nickel ore, iron ore fines, bauxite) can liquefy when moisture exceeds the Transportable Moisture Limit (TML)",
+      "TML is 90% of the Flow Moisture Point (FMP) — determined by laboratory testing",
+      "Liquefaction causes free-surface effect and cargo shift, potentially leading to capsize",
+      "Master must receive cargo declaration including moisture content and TML before loading",
+      "IMSBC Code (mandatory under SOLAS VI/1-2) classifies bulk cargoes into Groups A, B, and C",
+      "Group A cargoes may liquefy — require can test or other checks before loading"
+    ],
+    "follow_ups": [
+      "What is the 'can test' and how is it performed?",
+      "What should the master do if the declared moisture content is close to the TML?"
+    ],
+    "difficulty": "advanced",
+    "examiner_notes": "Multiple casualties (Bulk Jupiter, Nasco Diamond, etc.) have resulted from cargo liquefaction. Candidates should know the can test procedure: fill a can half full, strike it on a hard surface, observe if free moisture or fluid state appears. If in doubt, refuse to load until independent testing confirms moisture content is within TML."
+  },
+  {
+    "id": "cargo-005",
+    "question": "What are the requirements for cargo securing arrangements on board?",
+    "key_points": [
+      "Cargo Securing Manual (CSM) required under SOLAS VI Regulation 5.6 and the CSS Code",
+      "CSM approved by the flag state — specific to the vessel",
+      "Contains standard lashing patterns, securing equipment specifications, and safe working loads",
+      "All cargo units and transport units must be secured in accordance with the CSM",
+      "Container securing: twist locks, lashing rods, turnbuckles, stacking weights",
+      "Accelerations vary with stowage position — higher tiers and forward positions experience greater forces"
+    ],
+    "follow_ups": [
+      "How are the forces on cargo calculated using the CSS Code?",
+      "What inspections should be made during the voyage?"
+    ],
+    "difficulty": "intermediate",
+    "examiner_notes": "The CSM is an inspectable document under Port State Control. Candidates should understand that securing forces must counteract the combined effects of rolling, pitching, and heaving. Advanced method calculations in the CSS Code Annex 13 provide a quantitative approach. Weather routing to avoid heavy seas is part of cargo care."
+  }
+]

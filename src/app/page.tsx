@@ -1,11 +1,6 @@
 import Link from "next/link";
-import {
-  Anchor,
-  Compass,
-  Ship,
-  Sailboat,
-  Check,
-} from "lucide-react";
+import { Anchor, Compass, Ship, Sailboat, Check } from "lucide-react";
+import { Hero } from "@/components/landing/Hero";
 
 const courses = [
   {
@@ -66,49 +61,10 @@ const pricingPlans = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#FFFFFF]">
-      {/* ── Sticky Navigation ── */}
-      <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-[#FFFFFF]">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
-          <Link href="/" className="font-bold text-xl text-[#111111]">
-            Helm AI
-          </Link>
-          <Link
-            href="/select"
-            className="inline-flex items-center justify-center bg-[#2563EB] text-white rounded-lg px-6 py-3 text-[15px] font-medium hover:bg-[#1D4ED8] transition-colors"
-          >
-            Start Practicing
-          </Link>
-        </div>
-      </nav>
+      {/* Hero */}
+      <Hero />
 
-      {/* ── Hero ── */}
-      <section className="bg-[#FFFFFF]">
-        <div className="mx-auto max-w-[1200px] px-6 py-24">
-          <h1 className="text-5xl font-bold text-[#111111] leading-tight tracking-tight">
-            Prepare for your oral exam with AI
-          </h1>
-          <p className="text-lg text-[#6B7280] mt-6 max-w-xl">
-            One-to-one exam prep with an AI examiner that adapts to your level.
-            Voice-to-voice. Available 24/7.
-          </p>
-          <div className="mt-10 flex gap-4">
-            <Link
-              href="/select"
-              className="inline-flex items-center justify-center bg-[#2563EB] text-white rounded-lg px-6 py-3 text-[15px] font-medium hover:bg-[#1D4ED8] transition-colors"
-            >
-              Start practicing
-            </Link>
-            <a
-              href="#courses"
-              className="inline-flex items-center justify-center bg-white border border-[#E5E7EB] text-[#111111] rounded-lg px-6 py-3 text-[15px] font-medium hover:border-[#D1D5DB] transition-colors"
-            >
-              View courses
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Courses ── */}
+      {/* Courses */}
       <section id="courses" className="bg-[#F7F8FA]">
         <div className="mx-auto max-w-[1200px] px-6 py-20">
           <h2 className="text-3xl font-bold text-[#111111]">
@@ -119,7 +75,7 @@ export default function LandingPage() {
               <Link
                 key={course.slug}
                 href={`/session?ticket=${course.slug}`}
-                className="group bg-white border border-[#E5E7EB] rounded-xl p-6 transition-all hover:shadow-md"
+                className="group rounded-xl border border-[#E5E7EB] bg-white p-6 transition-all hover:shadow-md"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F7F8FA]">
                   <course.Icon className="h-6 w-6 text-[#6B7280]" />
@@ -139,7 +95,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Pricing ── */}
+      {/* Pricing */}
       <section id="pricing" className="bg-[#FFFFFF]">
         <div className="mx-auto max-w-[1200px] px-6 py-20">
           <h2 className="text-3xl font-bold text-[#111111]">Pricing</h2>
@@ -147,14 +103,14 @@ export default function LandingPage() {
             {pricingPlans.map((plan) => (
               <div
                 key={plan.name}
-                className={`relative bg-white rounded-xl p-6 flex flex-col ${
+                className={`relative flex flex-col rounded-xl bg-white p-6 ${
                   plan.highlighted
                     ? "border-2 border-[#2563EB]"
                     : "border border-[#E5E7EB]"
                 }`}
               >
                 {plan.highlighted && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#2563EB] text-white text-xs px-3 py-1 rounded-full font-medium">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#2563EB] px-3 py-1 text-xs font-medium text-white">
                     Popular
                   </span>
                 )}
@@ -164,7 +120,7 @@ export default function LandingPage() {
                 <p className="mt-2 text-3xl font-bold text-[#111111]">
                   {plan.price}
                 </p>
-                <ul className="mt-6 space-y-3 flex-1">
+                <ul className="mt-6 flex-1 space-y-3">
                   {plan.features.map((feature) => (
                     <li
                       key={feature}
@@ -179,7 +135,7 @@ export default function LandingPage() {
                   className={`mt-8 w-full rounded-lg px-6 py-3 text-[15px] font-medium transition-colors ${
                     plan.highlighted
                       ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
-                      : "bg-white border border-[#E5E7EB] text-[#111111] hover:border-[#D1D5DB]"
+                      : "border border-[#E5E7EB] bg-white text-[#111111] hover:border-[#D1D5DB]"
                   }`}
                 >
                   {plan.cta}
@@ -190,15 +146,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Promo Banner ── */}
+      {/* Promo Banner */}
       <section className="bg-[#F7F8FA]">
         <div className="mx-auto max-w-[1200px] px-6 py-12">
-          <p className="text-center text-[#6B7280] text-[15px]">
+          <p className="text-center text-[15px] text-[#6B7280]">
             Download 4 free courses — Master Unlimited, OOW Unlimited, Yacht
             Master Offshore, Yacht Master Ocean. Head to{" "}
             <a
               href="https://helmaiprep.com"
-              className="text-[#2563EB] font-medium hover:underline"
+              className="font-medium text-[#2563EB] hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -208,26 +164,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <footer className="border-t border-[#E5E7EB]">
-        <div className="mx-auto max-w-[1200px] px-6 py-8 flex items-center justify-between">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-8">
           <span className="font-bold text-[#111111]">Helm AI</span>
           <div className="flex gap-6">
             <Link
               href="#"
-              className="text-sm text-[#6B7280] hover:text-[#111111] transition-colors"
+              className="text-sm text-[#6B7280] transition-colors hover:text-[#111111]"
             >
               About
             </Link>
             <Link
               href="#"
-              className="text-sm text-[#6B7280] hover:text-[#111111] transition-colors"
+              className="text-sm text-[#6B7280] transition-colors hover:text-[#111111]"
             >
               Contact
             </Link>
             <Link
               href="#"
-              className="text-sm text-[#6B7280] hover:text-[#111111] transition-colors"
+              className="text-sm text-[#6B7280] transition-colors hover:text-[#111111]"
             >
               Terms
             </Link>
