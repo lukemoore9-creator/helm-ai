@@ -14,10 +14,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Use the non-streaming endpoint — we need the full buffer for Web Audio
-    // decodeAudioData anyway, and this avoids chunked transfer issues.
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream?optimize_streaming_latency=4`,
       {
         method: "POST",
         headers: {
@@ -27,7 +25,7 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           text,
-          model_id: "eleven_multilingual_v2",
+          model_id: "eleven_turbo_v2_5",
           voice_settings: {
             stability: 0.5,
             similarity_boost: 0.75,
@@ -47,20 +45,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const audioBuffer = await response.arrayBuffer();
-
-    if (audioBuffer.byteLength < 100) {
-      console.error(`TTS: Suspiciously small response (${audioBuffer.byteLength} bytes)`);
-      return Response.json(
-        { error: "TTS returned empty audio" },
-        { status: 502 }
-      );
-    }
-
-    return new Response(audioBuffer, {
+    return new Response(response.body, {
       headers: {
         "Content-Type": "audio/mpeg",
-        "Content-Length": audioBuffer.byteLength.toString(),
+        "Transfer-Encoding": "chunked",
       },
     });
   } catch (err) {

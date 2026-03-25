@@ -12,6 +12,16 @@ export interface Question {
 
 const DATA_DIR = path.join(process.cwd(), "src", "data");
 
+/** Check if the data directory exists at all (may not on Vercel without tracing config) */
+function dataDirectoryExists(): boolean {
+  try {
+    fs.accessSync(DATA_DIR);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const SLUG_MAP: Record<string, string> = {
   "OOW Unlimited": "oow-unlimited",
   "OOW Near Coastal": "oow-nearcoastal",
@@ -41,6 +51,7 @@ export function getTicketSlug(ticketName: string): string {
  * Lists available topic files for a ticket type.
  */
 export function listTopics(ticketSlug: string): string[] {
+  if (!dataDirectoryExists()) return [];
   const dir = path.join(DATA_DIR, "courses", ticketSlug);
   try {
     return fs

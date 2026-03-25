@@ -55,7 +55,7 @@ STUDENT CONTEXT:
 - Weak areas: ${(lastSession.weak_areas || []).join(", ") || "None identified"}
 - Strong areas: ${(lastSession.strong_areas || []).join(", ") || "None identified"}`
               : `
-- This is their first session. Introduce yourself warmly, explain briefly how the session works, and start with a foundational question.`
+- This is their first session.`
           }`;
         }
       }
@@ -63,9 +63,19 @@ STUDENT CONTEXT:
       console.warn("Failed to load student context:", err);
     }
 
-    const systemPrompt =
-      buildExaminerPrompt(ticketType || "OOW Unlimited", topic) +
-      studentContext;
+    let systemPrompt: string;
+    try {
+      systemPrompt =
+        buildExaminerPrompt(ticketType || "OOW Unlimited", topic) +
+        studentContext;
+    } catch (err) {
+      console.error("Failed to build examiner prompt from knowledge base:", err);
+      systemPrompt =
+        `You are Daniel, a senior maritime oral examiner. You are conducting an oral exam for a ${ticketType || "OOW Unlimited"} candidate` +
+        (topic ? ` on the topic of ${topic}.` : ".") +
+        ` Ask questions, probe understanding, and assess competency. Be thorough but fair.` +
+        studentContext;
+    }
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-20250514",
