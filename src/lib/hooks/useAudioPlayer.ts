@@ -135,6 +135,8 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
             setIsPlaying(false);
             reject(new Error('Audio playback failed'));
           };
+          audioEl.volume = 1;
+          audioEl.muted = false;
           audioEl.play().catch((err) => {
             console.error('[AudioPlayer] Play failed:', err);
             cleanupAudio();
@@ -211,6 +213,11 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
 
   const warmUp = useCallback(async (): Promise<void> => {
     await ensureAudioContext();
+    // Play a silent WAV to unlock HTML Audio autoplay on user gesture
+    const silentAudio = new Audio(
+      'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA='
+    );
+    await silentAudio.play();
   }, [ensureAudioContext]);
 
   const returnValue: UseAudioPlayerReturn & { warmUp: () => Promise<void> } = {

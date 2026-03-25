@@ -256,7 +256,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           {
             role: 'user',
             content:
-              'Begin the oral examination. Introduce yourself and ask your first question.',
+              'Greet the student briefly (1-2 sentences max) and ask what they want to work on or offer to throw questions at them. Do not introduce yourself with a long speech.',
           },
         ];
 
