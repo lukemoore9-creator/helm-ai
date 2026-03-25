@@ -61,8 +61,9 @@ export default function OnboardingPage() {
 
       await user?.reload();
       router.push("/");
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setError("Request failed: " + msg);
       setLoading(false);
     }
   };

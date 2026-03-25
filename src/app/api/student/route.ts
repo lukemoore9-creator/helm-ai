@@ -63,56 +63,62 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const { fullName, ticketType, hasExamDate, examDate } = await req.json();
+    const { fullName, ticketType, hasExamDate, examDate } = await req.json();
 
-  if (!fullName || !ticketType) {
-    return Response.json(
-      { error: "Please fill in all required fields" },
-      { status: 400 }
+    if (!fullName || !ticketType) {
+      return Response.json(
+        { error: "Please fill in all required fields" },
+        { status: 400 }
+      );
+    }
+
+    const supabase = createServiceClient();
+
+    // Get email from Clerk
+    const client = await clerkClient();
+    const clerkUser = await client.users.getUser(userId);
+    const email = clerkUser.emailAddresses?.[0]?.emailAddress || null;
+
+    // Upsert student
+    const { error: dbError } = await supabase.from("students").upsert(
+      {
+        clerk_id: userId,
+        email,
+        full_name: fullName,
+        ticket_type: ticketType,
+        has_exam_date: !!hasExamDate,
+        exam_date: hasExamDate && examDate ? examDate : null,
+        onboarding_complete: true,
+      },
+      { onConflict: "clerk_id" }
     );
+
+    if (dbError) {
+      console.error("Supabase error:", dbError);
+      return Response.json(
+        { error: "Failed to save profile: " + dbError.message },
+        { status: 500 }
+      );
+    }
+
+    // Update Clerk publicMetadata
+    await client.users.updateUser(userId, {
+      publicMetadata: {
+        onboardingComplete: true,
+        ticketType,
+      },
+    });
+
+    return Response.json({ success: true });
+  } catch (err) {
+    console.error("Student POST error:", err);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return Response.json({ error: message }, { status: 500 });
   }
-
-  const supabase = createServiceClient();
-
-  // Get email from Clerk
-  const client = await clerkClient();
-  const clerkUser = await client.users.getUser(userId);
-  const email = clerkUser.emailAddresses?.[0]?.emailAddress || null;
-
-  // Upsert student
-  const { error: dbError } = await supabase.from("students").upsert(
-    {
-      clerk_id: userId,
-      email,
-      full_name: fullName,
-      ticket_type: ticketType,
-      has_exam_date: !!hasExamDate,
-      exam_date: hasExamDate && examDate ? examDate : null,
-      onboarding_complete: true,
-    },
-    { onConflict: "clerk_id" }
-  );
-
-  if (dbError) {
-    console.error("Supabase error:", dbError);
-    return Response.json(
-      { error: "Failed to save profile" },
-      { status: 500 }
-    );
-  }
-
-  // Update Clerk publicMetadata
-  await client.users.updateUser(userId, {
-    publicMetadata: {
-      onboardingComplete: true,
-      ticketType,
-    },
-  });
-
-  return Response.json({ success: true });
 }
