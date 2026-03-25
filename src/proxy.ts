@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
+const isApiRoute = createRouteMatcher(["/api(.*)"]);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   const { sessionClaims, redirectToSignIn } = await auth();
@@ -14,11 +15,16 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
   // If not authenticated, redirect to sign-in
   if (!sessionClaims) {
+    // API routes should return 401, not redirect
+    if (isApiRoute(req)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return redirectToSignIn({ returnBackUrl: req.url });
   }
 
-  // If authenticated but on onboarding route, allow it
-  if (isOnboardingRoute(req)) {
+  // Allow API routes and onboarding route for authenticated users
+  // (API routes need to work during onboarding flow)
+  if (isApiRoute(req) || isOnboardingRoute(req)) {
     return NextResponse.next();
   }
 
