@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/components/layout/Header";
 import "./globals.css";
 
@@ -10,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Helm AI — Oral Exam Prep for Maritime Officers",
+  title: "Echo — Oral Exam Prep for Maritime Officers",
   description:
     "Prepare for your MCA oral exam with an AI examiner. Voice-to-voice exam practice, available 24/7.",
 };
@@ -23,8 +24,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <Header />
-        {children}
+        <ClerkProvider
+          appearance={{
+            variables: {
+              colorPrimary: "#2563EB",
+              colorText: "#111111",
+              colorTextSecondary: "#6B7280",
+              colorBackground: "#FFFFFF",
+              borderRadius: "8px",
+              fontFamily: "Inter, sans-serif",
+            },
+          }}
+        >
+          <Header />
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );
