@@ -8,9 +8,12 @@ export const maxDuration = 30;
 const client = new Anthropic();
 
 export async function POST(req: Request) {
+  const t0 = Date.now();
   try {
     const { messages, ticketType, topic, currentTopic } = await req.json();
     const effectiveTopic = currentTopic || topic;
+
+    const isOpening = messages.length === 1;
 
     // Build student context (non-blocking — works without it)
     let studentContext = "";
@@ -26,14 +29,19 @@ export async function POST(req: Request) {
           .single();
 
         if (student) {
-          const { data: lastSession } = await supabase
-            .from("sessions")
-            .select("topics_covered, ai_summary, weak_areas, strong_areas")
-            .eq("student_id", student.id)
-            .eq("status", "completed")
-            .order("ended_at", { ascending: false })
-            .limit(1)
-            .single();
+          // Run lastSession query only if needed (skip on opening to save time)
+          let lastSession = null;
+          if (!isOpening) {
+            const { data } = await supabase
+              .from("sessions")
+              .select("topics_covered, ai_summary, weak_areas, strong_areas")
+              .eq("student_id", student.id)
+              .eq("status", "completed")
+              .order("ended_at", { ascending: false })
+              .limit(1)
+              .single();
+            lastSession = data;
+          }
 
           const examDate =
             student.has_exam_date && student.exam_date
@@ -81,11 +89,13 @@ STUDENT CONTEXT:
         studentContext;
     }
 
-    console.log(`[Chat] Prompt size: ${systemPrompt.length} chars, topic: ${effectiveTopic || 'none'}`);
+    // Use Haiku for opening greeting (fast TTFT), Sonnet for exam questions
+    const model = isOpening ? "claude-haiku-4-5-20251001" : "claude-sonnet-4-20250514";
+    console.log(`[Chat] model: ${model}, prompt: ${systemPrompt.length} chars, topic: ${effectiveTopic || 'none'}, setup: ${Date.now() - t0}ms`);
 
     const stream = client.messages.stream({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 250,
+      model,
+      max_tokens: isOpening ? 100 : 250,
       system: systemPrompt,
       messages,
     });
