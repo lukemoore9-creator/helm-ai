@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/server";
 import { DashboardClient } from "./DashboardClient";
+import { isBetaUser } from "@/lib/beta-access";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -16,6 +17,7 @@ export default async function DashboardPage() {
     .single();
 
   if (!student) redirect("/onboarding");
+  if (!isBetaUser(student.email)) redirect("/");
 
   // Fetch completed sessions
   const { data: sessions } = await supabase

@@ -217,6 +217,7 @@ export function useAudioPlayer(): UseAudioPlayerReturn {
     const silentAudio = new Audio(
       'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA='
     );
+    silentAudio.volume = 0.01;
     await silentAudio.play();
   }, [ensureAudioContext]);
 
