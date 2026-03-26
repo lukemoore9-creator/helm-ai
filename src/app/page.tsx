@@ -90,15 +90,18 @@ export default function SessionPage() {
   };
 
   const handleStart = async () => {
+    console.log("[handleStart] Starting...");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((t) => t.stop());
+      console.log("[handleStart] Mic access granted");
     } catch {
       setMicError(true);
       return;
     }
 
     try {
+      console.log("[handleStart] Calling /api/session/start...");
       const res = await fetch("/api/session/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -106,10 +109,12 @@ export default function SessionPage() {
       });
       const data = await res.json();
       if (data.sessionId) setSessionId(data.sessionId);
+      console.log("[handleStart] Session created:", data.sessionId);
     } catch (err) {
-      console.error("Failed to create session:", err);
+      console.error("[handleStart] Failed to create session:", err);
     }
 
+    console.log("[handleStart] Calling startSession...");
     setHasStarted(true);
     startSession(ticketSlug);
   };
@@ -209,6 +214,13 @@ export default function SessionPage() {
               Microphone access is required. Please allow microphone permissions
               and try again.
             </p>
+          </div>
+        )}
+
+        {lastError && (
+          <div className="mt-8 flex max-w-md items-start gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-4 py-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#EF4444]" />
+            <p className="text-sm text-[#991B1B]">{lastError}</p>
           </div>
         )}
 

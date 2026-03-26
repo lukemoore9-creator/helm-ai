@@ -53,7 +53,10 @@ async function readStreamAndSplit(
   response: Response,
   onSentence: (sentence: string, isFirst: boolean) => void
 ): Promise<string> {
-  const reader = response.body!.getReader();
+  if (!response.body) {
+    throw new Error('Stream response body is null — server may have returned an error');
+  }
+  const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
   let fullText = '';

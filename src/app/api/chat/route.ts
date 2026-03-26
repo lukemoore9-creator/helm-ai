@@ -3,6 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { buildExaminerPrompt } from "@/lib/prompts";
 import { createServiceClient } from "@/lib/supabase/server";
 
+export const maxDuration = 30;
+
 const client = new Anthropic();
 
 export async function POST(req: Request) {
@@ -107,7 +109,6 @@ STUDENT CONTEXT:
     return new Response(readable, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Transfer-Encoding": "chunked",
       },
     });
   } catch (err) {
