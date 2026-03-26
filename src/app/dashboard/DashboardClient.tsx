@@ -22,6 +22,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { ticketDisplayName } from "@/lib/utils";
 
 interface Session {
   id: string;
@@ -83,7 +84,7 @@ export function DashboardClient({
   const statValues: Record<string, string> = {
     sessions: String(student.total_sessions),
     prep: `${totalHours > 0 ? `${totalHours}h ` : ""}${remainingMins}m`,
-    days: daysToExam !== null ? String(daysToExam) : "—",
+    days: daysToExam !== null ? String(daysToExam) : "No date set",
     readiness: `${student.overall_readiness}%`,
   };
 
@@ -97,7 +98,7 @@ export function DashboardClient({
                 Dashboard
               </h1>
               <p className="mt-1 text-sm text-[#6B7280]">
-                {student.full_name} &mdash; {student.ticket_type}
+                {student.full_name} &mdash; {ticketDisplayName(student.ticket_type)}
               </p>
             </div>
             <Link href="/">
@@ -196,7 +197,7 @@ export function DashboardClient({
 
         {/* Focus areas */}
         <BlurFade delay={0.3}>
-          <Card className="mt-6 border border-[#E5E7EB] shadow-none">
+          <Card className={`mt-6 border border-[#E5E7EB] shadow-none${weakAreas.length > 0 ? " border-l-4 border-l-[#F59E0B]" : ""}`}>
             <CardContent className="p-6">
               <h2 className="text-lg font-bold tracking-tight text-[#111111]">
                 Focus Areas

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
   try {
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream?optimize_streaming_latency=4`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream?optimize_streaming_latency=4&output_format=mp3_22050_32`,
       {
         method: "POST",
         headers: {
@@ -45,10 +45,11 @@ export async function POST(req: Request) {
       );
     }
 
-    return new Response(response.body, {
+    const audioBuffer = await response.arrayBuffer();
+    return new Response(audioBuffer, {
       headers: {
         "Content-Type": "audio/mpeg",
-        "Transfer-Encoding": "chunked",
+        "Content-Length": String(audioBuffer.byteLength),
       },
     });
   } catch (err) {

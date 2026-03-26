@@ -53,9 +53,10 @@ STUDENT CONTEXT:
 - Last session topics: ${(lastSession.topics_covered || []).join(", ")}
 - Last session summary: ${lastSession.ai_summary || "N/A"}
 - Weak areas: ${(lastSession.weak_areas || []).join(", ") || "None identified"}
-- Strong areas: ${(lastSession.strong_areas || []).join(", ") || "None identified"}`
+- Strong areas: ${(lastSession.strong_areas || []).join(", ") || "None identified"}
+- This is a returning student. Do NOT re-introduce yourself. Greet them in ONE sentence: "Welcome back [name], want to pick up where we left off or tackle something new?" Reference their weak areas only if relevant. Then STOP and wait for their answer.`
               : `
-- This is their first session.`
+- This is their first session. Greet them in ONE sentence using their name. Immediately ask what they want to work on or offer to throw questions at them. Do NOT give a long introduction. Do NOT explain how the session works. Do NOT share your background or credentials. Just: "Hi [name], shall I fire some questions at you or is there a topic you want to focus on?" — that's it.`
           }`;
         }
       }
@@ -77,21 +78,38 @@ STUDENT CONTEXT:
         studentContext;
     }
 
-    const response = await client.messages.create({
+    const stream = client.messages.stream({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
+      max_tokens: 250,
       system: systemPrompt,
       messages,
     });
 
-    const text = response.content
-      .filter(
-        (block): block is Anthropic.TextBlock => block.type === "text"
-      )
-      .map((block) => block.text)
-      .join("");
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (
+              event.type === "content_block_delta" &&
+              event.delta.type === "text_delta"
+            ) {
+              controller.enqueue(encoder.encode(event.delta.text));
+            }
+          }
+          controller.close();
+        } catch (err) {
+          controller.error(err);
+        }
+      },
+    });
 
-    return Response.json({ text });
+    return new Response(readable, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+      },
+    });
   } catch (err) {
     console.error("Chat API error:", err);
     const message = err instanceof Error ? err.message : "Unknown error";

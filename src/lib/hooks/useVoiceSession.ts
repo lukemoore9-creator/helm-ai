@@ -29,6 +29,64 @@ interface UseVoiceSessionReturn {
 }
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Split text into sentences on . ? ! boundaries. Returns complete sentences
+ *  and any leftover fragment that hasn't ended with a sentence boundary yet. */
+function extractSentences(text: string): { sentences: string[]; remainder: string } {
+  const sentences: string[] = [];
+  // Match sentences ending with . ? or ! (optionally followed by quotes/parens)
+  const regex = /[^.!?]*[.!?]+["')\s]*/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    sentences.push(match[0].trim());
+    lastIndex = regex.lastIndex;
+  }
+  return { sentences, remainder: text.slice(lastIndex) };
+}
+
+/** Read a streaming response body, calling onSentence for each complete sentence
+ *  as it arrives. Returns the full accumulated text when the stream ends. */
+async function readStreamAndSplit(
+  response: Response,
+  onSentence: (sentence: string, isFirst: boolean) => void
+): Promise<string> {
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullText = '';
+  let sentenceCount = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    buffer += chunk;
+    fullText += chunk;
+
+    // Extract any complete sentences from the buffer
+    const { sentences, remainder } = extractSentences(buffer);
+    buffer = remainder;
+
+    for (const sentence of sentences) {
+      if (sentence.trim()) {
+        onSentence(sentence, sentenceCount === 0);
+        sentenceCount++;
+      }
+    }
+  }
+
+  // Flush any remaining text as the final sentence
+  if (buffer.trim()) {
+    onSentence(buffer.trim(), sentenceCount === 0);
+  }
+
+  return fullText;
+}
+
+// ---------------------------------------------------------------------------
 // Hook implementation
 // ---------------------------------------------------------------------------
 
@@ -130,7 +188,65 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   }, []);
 
   // ------------------------------------------------------------------
-  // Process user speech: send to Claude, get response, play TTS
+  // Stream Claude response + pipeline TTS playback
+  // ------------------------------------------------------------------
+
+  /** Fetch streaming chat, split into sentences, pipeline TTS playback.
+   *  Returns the full assistant text. */
+  const streamAndSpeak = useCallback(
+    async (chatRes: Response): Promise<string> => {
+      // We'll collect sentences into a queue and play them sequentially.
+      // The first sentence triggers playback immediately; subsequent ones
+      // are queued and played as each finishes.
+      const sentenceQueue: string[] = [];
+      let playing = false;
+      let resolveDone: () => void;
+      const donePromise = new Promise<void>((r) => { resolveDone = r; });
+      let streamFinished = false;
+
+      const playNext = async () => {
+        if (playing) return; // already playing — will be called again when current finishes
+        const next = sentenceQueue.shift();
+        if (!next) {
+          if (streamFinished) {
+            resolveDone();
+          }
+          return;
+        }
+        playing = true;
+        setState('speaking');
+        await playTTS(next);
+        playing = false;
+        // Play next sentence if available
+        await playNext();
+      };
+
+      const fullText = await readStreamAndSplit(chatRes, (sentence, isFirst) => {
+        console.log(`[VoiceSession] Sentence ${isFirst ? '(first)' : ''}: ${sentence.substring(0, 40)}...`);
+        sentenceQueue.push(sentence);
+        if (isFirst) {
+          // Start playing immediately — don't wait for the rest of the stream
+          playNext();
+        }
+      });
+
+      streamFinished = true;
+      // If nothing is playing and queue is empty, resolve now
+      if (!playing && sentenceQueue.length === 0) {
+        resolveDone!();
+      } else if (!playing) {
+        // Queue has items but nothing is playing — kick it off
+        playNext();
+      }
+
+      await donePromise;
+      return fullText;
+    },
+    [playTTS]
+  );
+
+  // ------------------------------------------------------------------
+  // Process user speech: send to Claude, get streaming response, pipeline TTS
   // ------------------------------------------------------------------
 
   // Use a ref so the speech recognition callback always sees the latest version
@@ -154,8 +270,8 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       ]);
 
       try {
-        // Call Claude
-        console.log('[VoiceSession] Calling /api/chat...');
+        // Call Claude (streaming)
+        console.log('[VoiceSession] Calling /api/chat (streaming)...');
         const chatRes = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -169,8 +285,9 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           throw new Error(`Chat API returned ${chatRes.status}`);
         }
 
-        const { text: assistantText } = await chatRes.json();
-        console.log('[VoiceSession] Claude responded:', assistantText.substring(0, 50) + '...');
+        // Stream response + pipeline TTS
+        const assistantText = await streamAndSpeak(chatRes);
+        console.log('[VoiceSession] All TTS complete for:', assistantText.substring(0, 50) + '...');
 
         const assistantMsg: Message = { role: 'assistant', content: assistantText };
         messagesRef.current = [...messagesRef.current, assistantMsg];
@@ -180,13 +297,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           { speaker: 'examiner', text: assistantText, timestamp: Date.now() },
         ]);
 
-        // Speak the response
-        setState('speaking');
-        console.log('[VoiceSession] Playing TTS...');
-        await playTTS(assistantText);
-        console.log('[VoiceSession] TTS playback complete, reopening mic...');
-
-        // After audio finishes, reopen mic
+        // After all audio finishes, reopen mic
         if (isSessionActiveRef.current) {
           setState('listening');
           speechRecognition.startListening();
@@ -213,7 +324,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playTTS, stopMicMeter]);
+  }, [playTTS, stopMicMeter, streamAndSpeak]);
 
   const handleSpeechComplete = useCallback((text: string) => {
     processUserSpeechRef.current(text);
@@ -223,7 +334,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     onSpeechComplete: handleSpeechComplete,
     onListeningStart: startMicMeter,
     lang: 'en-GB',
-    silenceTimeout: 2000,
+    silenceTimeout: 1200,
   });
 
   // ------------------------------------------------------------------
@@ -251,16 +362,16 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       }
 
       try {
-        // Get opening question from Claude
+        // Get opening question from Claude (streaming)
         const initialMessages: Message[] = [
           {
             role: 'user',
             content:
-              'Greet the student briefly (1-2 sentences max) and ask what they want to work on or offer to throw questions at them. Do not introduce yourself with a long speech.',
+              'Session starting. Greet the student in ONE short sentence and ask ONE question. Maximum 2 sentences total. Do not introduce yourself at length.',
           },
         ];
 
-        console.log('[VoiceSession] Calling /api/chat for opening question...');
+        console.log('[VoiceSession] Calling /api/chat for opening question (streaming)...');
         const chatRes = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -274,8 +385,9 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           throw new Error(`Chat API returned ${chatRes.status}`);
         }
 
-        const { text: openingText } = await chatRes.json();
-        console.log('[VoiceSession] Got opening text:', openingText.substring(0, 80) + '...');
+        // Stream and pipeline TTS for the opening
+        const openingText = await streamAndSpeak(chatRes);
+        console.log('[VoiceSession] Opening complete:', openingText.substring(0, 80) + '...');
 
         messagesRef.current = [
           ...initialMessages,
@@ -285,12 +397,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         setTranscript([
           { speaker: 'examiner', text: openingText, timestamp: Date.now() },
         ]);
-
-        // Speak the opening question
-        setState('speaking');
-        console.log('[VoiceSession] Playing opening TTS...');
-        await playTTS(openingText);
-        console.log('[VoiceSession] Opening TTS complete, starting to listen...');
 
         // After speaking, start listening
         if (isSessionActiveRef.current) {
@@ -313,7 +419,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         ]);
       }
     },
-    [playTTS, speechRecognition, audioPlayer]
+    [playTTS, speechRecognition, audioPlayer, streamAndSpeak]
   );
 
   const endSession = useCallback(() => {

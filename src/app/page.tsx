@@ -6,13 +6,8 @@ import { Orb } from "@/components/voice/Orb";
 import { TranscriptPanel } from "@/components/voice/TranscriptPanel";
 import { useVoiceSession } from "@/lib/hooks/useVoiceSession";
 import { Button } from "@/components/ui/button";
-
-const TICKET_NAMES: Record<string, string> = {
-  "oow-unlimited": "OOW Unlimited",
-  "oow-3000gt-yacht": "OOW <3000GT (Yacht)",
-  "master-3000gt": "Master <3000GT",
-  "master-unlimited": "Master Unlimited",
-};
+import { ticketDisplayName } from "@/lib/utils";
+import { isBetaUser } from "@/lib/beta-access";
 
 const STATE_LABELS: Record<string, string> = {
   idle: "Ready to start",
@@ -25,6 +20,7 @@ interface StudentProfile {
   student: {
     id: string;
     full_name: string;
+    email: string | null;
     ticket_type: string;
     exam_date: string | null;
     has_exam_date: boolean;
@@ -85,7 +81,7 @@ export default function SessionPage() {
   }, [hasStarted]);
 
   const ticketSlug = profile?.student?.ticket_type || "oow-unlimited";
-  const ticketName = TICKET_NAMES[ticketSlug] || ticketSlug;
+  const ticketName = ticketDisplayName(ticketSlug);
 
   const formatTime = (s: number) => {
     const mins = Math.floor(s / 60);
@@ -144,6 +140,27 @@ export default function SessionPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <p className="text-sm text-[#6B7280]">Loading...</p>
+      </div>
+    );
+  }
+
+  // Beta access gate
+  if (profile && !isBetaUser(profile.student.email)) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
+        <span className="text-2xl font-bold tracking-tight text-[#111111]">
+          Echo
+        </span>
+        <h1 className="mt-10 text-xl font-bold tracking-tight text-[#111111]">
+          Private Beta
+        </h1>
+        <p className="mt-3 max-w-md text-center text-[15px] leading-relaxed text-[#6B7280]">
+          Echo is currently in private beta. We&apos;ll be opening up soon.
+        </p>
+        <p className="mt-6 text-sm text-[#9CA3AF]">
+          If you&apos;ve been invited, make sure you&apos;re signed in with the
+          correct email.
+        </p>
       </div>
     );
   }
