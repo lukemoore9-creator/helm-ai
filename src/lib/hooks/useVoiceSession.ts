@@ -55,60 +55,6 @@ function detectTopic(text: string): string | null {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function extractSentences(text: string): { sentences: string[]; remainder: string } {
-  const sentences: string[] = [];
-  const regex = /[^.!?]*[.!?]+["')\s]*/g;
-  let lastIndex = 0;
-  let match;
-  while ((match = regex.exec(text)) !== null) {
-    sentences.push(match[0].trim());
-    lastIndex = regex.lastIndex;
-  }
-  return { sentences, remainder: text.slice(lastIndex) };
-}
-
-async function readStreamAndSplit(
-  response: Response,
-  onSentence: (sentence: string, isFirst: boolean) => void
-): Promise<string> {
-  if (!response.body) {
-    throw new Error('Stream response body is null');
-  }
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = '';
-  let fullText = '';
-  let sentenceCount = 0;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value, { stream: true });
-    buffer += chunk;
-    fullText += chunk;
-
-    const { sentences, remainder } = extractSentences(buffer);
-    buffer = remainder;
-
-    for (const sentence of sentences) {
-      if (sentence.trim()) {
-        onSentence(sentence, sentenceCount === 0);
-        sentenceCount++;
-      }
-    }
-  }
-
-  if (buffer.trim()) {
-    onSentence(buffer.trim(), sentenceCount === 0);
-  }
-
-  return fullText;
-}
-
-// ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
 
@@ -140,6 +86,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Unknown TTS error';
         setLastError(`Voice playback failed: ${errorMsg}`);
+        throw err; // re-throw so callers know it failed
       }
     },
     [audioPlayer]
@@ -167,7 +114,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       };
       micRafRef.current = requestAnimationFrame(tick);
     } catch (err) {
-      console.warn('[VoiceSession] Mic metering failed:', err);
+      console.warn('[Voice] Mic metering failed:', err);
     }
   }, []);
 
@@ -179,48 +126,20 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     setMicLevel(0);
   }, []);
 
-  // Stream + speak pipeline
-  const streamAndSpeak = useCallback(
-    async (chatRes: Response): Promise<string> => {
-      const sentenceQueue: string[] = [];
-      let playing = false;
-      let resolveDone: () => void;
-      const donePromise = new Promise<void>((r) => { resolveDone = r; });
-      let streamFinished = false;
+  // ------------------------------------------------------------------
+  // Process user speech — SIMPLE PATH (no streaming, full text → TTS)
+  // ------------------------------------------------------------------
 
-      const playNext = async () => {
-        if (playing) return;
-        const next = sentenceQueue.shift();
-        if (!next) { if (streamFinished) resolveDone(); return; }
-        playing = true;
-        setState('speaking');
-        await playTTS(next);
-        playing = false;
-        await playNext();
-      };
-
-      const fullText = await readStreamAndSplit(chatRes, (sentence, isFirst) => {
-        sentenceQueue.push(sentence);
-        if (isFirst) playNext();
-      });
-
-      streamFinished = true;
-      if (!playing && sentenceQueue.length === 0) resolveDone!();
-      else if (!playing) playNext();
-
-      await donePromise;
-      return fullText;
-    },
-    [playTTS]
-  );
-
-  // Process user speech
   const processUserSpeechRef = useRef<(text: string) => void>(() => {});
 
   useEffect(() => {
     processUserSpeechRef.current = async (userText: string) => {
       if (!userText.trim() || !isSessionActiveRef.current) return;
 
+      const t0 = Date.now();
+      const log = (msg: string) => console.log(`[Voice] +${Date.now() - t0}ms ${msg}`);
+
+      log('speech complete, sending to chat API');
       setState('processing');
       setLastError(null);
       stopMicMeter();
@@ -234,6 +153,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       ]);
 
       try {
+        log('fetching /api/chat...');
         const chatRes = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -244,32 +164,43 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           }),
         });
 
+        log(`chat response received, status: ${chatRes.status}`);
         if (!chatRes.ok) throw new Error(`Chat API returned ${chatRes.status}`);
 
-        const assistantText = await streamAndSpeak(chatRes);
+        // SIMPLE PATH: read entire response as text, then send to TTS as one block
+        const fullText = await chatRes.text();
+        log(`full response text received: ${fullText.length} chars`);
 
-        const detected = detectTopic(assistantText);
+        const detected = detectTopic(fullText);
         if (detected) currentTopicRef.current = detected;
 
-        messagesRef.current = [...messagesRef.current, { role: 'assistant', content: assistantText }];
+        messagesRef.current = [...messagesRef.current, { role: 'assistant', content: fullText }];
 
         setTranscript((prev) => [
           ...prev,
-          { speaker: 'examiner', text: assistantText, timestamp: Date.now() },
+          { speaker: 'examiner', text: fullText, timestamp: Date.now() },
         ]);
+
+        // Send entire text to TTS as one block
+        log('sending to TTS...');
+        setState('speaking');
+        await playTTS(fullText);
+        log('TTS playback complete');
 
         if (isSessionActiveRef.current) {
           setState('listening');
           speechRecognition.startListening();
+          log('mic reopened, listening');
         }
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+        log(`ERROR: ${errorMsg}`);
         setLastError(errorMsg);
 
         const errorText = 'Sorry, there was a technical issue. Could you repeat that?';
         setTranscript((prev) => [...prev, { speaker: 'examiner', text: errorText, timestamp: Date.now() }]);
         setState('speaking');
-        await playTTS(errorText);
+        await playTTS(errorText).catch(() => {});
 
         if (isSessionActiveRef.current) {
           setState('listening');
@@ -278,7 +209,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playTTS, stopMicMeter, streamAndSpeak]);
+  }, [playTTS, stopMicMeter]);
 
   const handleSpeechComplete = useCallback((text: string) => {
     processUserSpeechRef.current(text);
@@ -292,11 +223,14 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   });
 
   // ------------------------------------------------------------------
-  // START SESSION — STATIC AUDIO GREETING, ZERO API CALLS
+  // START SESSION — TTS GREETING (your voice), static MP3 fallback
   // ------------------------------------------------------------------
 
   const startSession = useCallback(
     async (ticketType: string, firstName?: string, totalSessions?: number) => {
+      const t0 = Date.now();
+      const log = (msg: string) => console.log(`[Voice:greeting] +${Date.now() - t0}ms ${msg}`);
+
       messagesRef.current = [];
       ticketTypeRef.current = ticketType;
       currentTopicRef.current = null;
@@ -305,9 +239,18 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       setLastError(null);
       setState('speaking');
 
-      const isReturning = (totalSessions || 0) > 0;
+      // Warm up AudioContext on user gesture
+      log('warming up AudioContext');
+      try {
+        if ('warmUp' in audioPlayer) {
+          await (audioPlayer as { warmUp: () => Promise<void> }).warmUp();
+        }
+        log('AudioContext ready');
+      } catch (err) {
+        log('AudioContext warmup failed: ' + err);
+      }
 
-      // Greeting text for transcript + Claude context (not sent to any API)
+      const isReturning = (totalSessions || 0) > 0;
       const name = firstName || 'there';
       const greetingText = isReturning
         ? `Welcome back ${name}. Want to pick up where we left off, or is there a topic you want to focus on today?`
@@ -317,41 +260,35 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       setTranscript([{ speaker: 'examiner', text: greetingText, timestamp: Date.now() }]);
       messagesRef.current = [{ role: 'assistant', content: greetingText }];
 
-      // Play static MP3 with bare Audio element — simplest possible approach
-      const audioUrl = isReturning
-        ? '/audio/greeting-returning.mp3'
-        : '/audio/greeting-first.mp3';
-
-      console.log('[VoiceSession] Playing static greeting:', audioUrl);
+      log('sending greeting to TTS: ' + greetingText.length + ' chars');
 
       try {
-        await new Promise<void>((resolve, reject) => {
+        // Primary: use TTS with your ElevenLabs voice
+        await playTTS(greetingText);
+        log('TTS greeting playback complete');
+      } catch (err) {
+        log('TTS greeting failed: ' + err);
+        // Fallback: try static MP3
+        try {
+          log('trying static MP3 fallback');
+          const audioUrl = isReturning ? '/audio/greeting-returning.mp3' : '/audio/greeting-first.mp3';
           const audio = new Audio(audioUrl);
           audio.volume = 1;
-
-          // Hard 8-second timeout — if audio hasn't ended, move on
-          const timeout = setTimeout(() => {
-            console.warn('[VoiceSession] Greeting audio timed out after 8s');
-            audio.pause();
-            resolve();
-          }, 8000);
-
-          audio.onended = () => { clearTimeout(timeout); resolve(); };
-          audio.onerror = (e) => { clearTimeout(timeout); reject(e); };
-          audio.play().catch((err) => { clearTimeout(timeout); reject(err); });
-        });
-        console.log('[VoiceSession] Greeting playback complete');
-      } catch (err) {
-        console.warn('[VoiceSession] Static greeting failed:', err);
-        // Don't try TTS fallback — just move on to listening
+          await audio.play();
+          await new Promise<void>((resolve) => { audio.onended = () => resolve(); });
+          log('static fallback complete');
+        } catch (fallbackErr) {
+          log('static fallback also failed: ' + fallbackErr);
+        }
       }
 
       if (isSessionActiveRef.current) {
         setState('listening');
         speechRecognition.startListening();
+        log('listening started');
       }
     },
-    [speechRecognition]
+    [playTTS, speechRecognition, audioPlayer]
   );
 
   const endSession = useCallback(() => {
