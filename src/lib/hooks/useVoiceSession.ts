@@ -3,7 +3,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { SessionState, TranscriptEntry } from '@/lib/types';
 import { useSpeechRecognition } from './useSpeechRecognition';
-import { useAudioPlayer } from './useAudioPlayer';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -55,6 +54,75 @@ function detectTopic(text: string): string | null {
 }
 
 // ---------------------------------------------------------------------------
+// Simple TTS: fetch /api/tts → blob → bare Audio element. No Web Audio API.
+// ---------------------------------------------------------------------------
+
+/** Fetch TTS audio and play it with a plain Audio element.
+ *  No AudioContext, no AnalyserNode, no createMediaElementSource.
+ *  Returns a promise that resolves when playback ends. */
+async function fetchAndPlayAudio(
+  text: string,
+  log?: (msg: string) => void
+): Promise<void> {
+  const l = log || (() => {});
+
+  l('fetching /api/tts...');
+  const res = await fetch('/api/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`TTS returned ${res.status}: ${body.substring(0, 100)}`);
+  }
+
+  const blob = await res.blob();
+  l(`TTS audio received: ${blob.size} bytes`);
+
+  if (blob.size < 100) {
+    throw new Error(`TTS returned tiny audio (${blob.size} bytes)`);
+  }
+
+  const blobUrl = URL.createObjectURL(blob);
+
+  return new Promise<void>((resolve, reject) => {
+    const audio = new Audio(blobUrl);
+    audio.volume = 1;
+
+    // Hard 15-second timeout
+    const timeout = setTimeout(() => {
+      l('audio timed out after 15s');
+      audio.pause();
+      URL.revokeObjectURL(blobUrl);
+      resolve();
+    }, 15000);
+
+    audio.onended = () => {
+      clearTimeout(timeout);
+      URL.revokeObjectURL(blobUrl);
+      l('audio playback ended');
+      resolve();
+    };
+
+    audio.onerror = () => {
+      clearTimeout(timeout);
+      URL.revokeObjectURL(blobUrl);
+      reject(new Error('Audio element playback error'));
+    };
+
+    audio.play().catch((err) => {
+      clearTimeout(timeout);
+      URL.revokeObjectURL(blobUrl);
+      reject(err);
+    });
+
+    l('audio.play() called');
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
 
@@ -69,6 +137,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   const currentTopicRef = useRef<string | null>(null);
   const stateRef = useRef<SessionState>('idle');
   const isSessionActiveRef = useRef(false);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const micStreamRef = useRef<MediaStream | null>(null);
   const micContextRef = useRef<AudioContext | null>(null);
@@ -76,21 +145,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   const micRafRef = useRef<number | null>(null);
 
   useEffect(() => { stateRef.current = state; }, [state]);
-
-  const audioPlayer = useAudioPlayer();
-
-  const playTTS = useCallback(
-    async (text: string): Promise<void> => {
-      try {
-        await audioPlayer.play(text);
-      } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Unknown TTS error';
-        setLastError(`Voice playback failed: ${errorMsg}`);
-        throw err; // re-throw so callers know it failed
-      }
-    },
-    [audioPlayer]
-  );
 
   // Mic metering
   const startMicMeter = useCallback(async () => {
@@ -127,7 +181,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   }, []);
 
   // ------------------------------------------------------------------
-  // Process user speech — SIMPLE PATH (no streaming, full text → TTS)
+  // Process user speech — SIMPLE: full text from Claude → TTS → play
   // ------------------------------------------------------------------
 
   const processUserSpeechRef = useRef<(text: string) => void>(() => {});
@@ -167,7 +221,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         log(`chat response received, status: ${chatRes.status}`);
         if (!chatRes.ok) throw new Error(`Chat API returned ${chatRes.status}`);
 
-        // SIMPLE PATH: read entire response as text, then send to TTS as one block
+        // Read entire response as text
         const fullText = await chatRes.text();
         log(`full response text received: ${fullText.length} chars`);
 
@@ -181,10 +235,9 @@ export function useVoiceSession(): UseVoiceSessionReturn {
           { speaker: 'examiner', text: fullText, timestamp: Date.now() },
         ]);
 
-        // Send entire text to TTS as one block
-        log('sending to TTS...');
+        // TTS: fetch audio blob → bare Audio element
         setState('speaking');
-        await playTTS(fullText);
+        await fetchAndPlayAudio(fullText, log);
         log('TTS playback complete');
 
         if (isSessionActiveRef.current) {
@@ -197,11 +250,13 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         log(`ERROR: ${errorMsg}`);
         setLastError(errorMsg);
 
-        const errorText = 'Sorry, there was a technical issue. Could you repeat that?';
-        setTranscript((prev) => [...prev, { speaker: 'examiner', text: errorText, timestamp: Date.now() }]);
-        setState('speaking');
-        await playTTS(errorText).catch(() => {});
+        setTranscript((prev) => [...prev, {
+          speaker: 'examiner',
+          text: 'Sorry, there was a technical issue. Could you repeat that?',
+          timestamp: Date.now(),
+        }]);
 
+        // Skip TTS for error message — just go back to listening
         if (isSessionActiveRef.current) {
           setState('listening');
           speechRecognition.startListening();
@@ -209,7 +264,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playTTS, stopMicMeter]);
+  }, [stopMicMeter]);
 
   const handleSpeechComplete = useCallback((text: string) => {
     processUserSpeechRef.current(text);
@@ -223,7 +278,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   });
 
   // ------------------------------------------------------------------
-  // START SESSION — TTS GREETING (your voice), static MP3 fallback
+  // START SESSION — TTS greeting via bare fetch, static MP3 fallback
   // ------------------------------------------------------------------
 
   const startSession = useCallback(
@@ -239,17 +294,6 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       setLastError(null);
       setState('speaking');
 
-      // Warm up AudioContext on user gesture
-      log('warming up AudioContext');
-      try {
-        if ('warmUp' in audioPlayer) {
-          await (audioPlayer as { warmUp: () => Promise<void> }).warmUp();
-        }
-        log('AudioContext ready');
-      } catch (err) {
-        log('AudioContext warmup failed: ' + err);
-      }
-
       const isReturning = (totalSessions || 0) > 0;
       const name = firstName || 'there';
       const greetingText = isReturning
@@ -260,22 +304,23 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       setTranscript([{ speaker: 'examiner', text: greetingText, timestamp: Date.now() }]);
       messagesRef.current = [{ role: 'assistant', content: greetingText }];
 
-      log('sending greeting to TTS: ' + greetingText.length + ' chars');
+      log('greeting text ready, fetching TTS');
 
       try {
-        // Primary: use TTS with your ElevenLabs voice
-        await playTTS(greetingText);
-        log('TTS greeting playback complete');
+        await fetchAndPlayAudio(greetingText, log);
+        log('greeting playback complete');
       } catch (err) {
-        log('TTS greeting failed: ' + err);
-        // Fallback: try static MP3
+        log('TTS greeting failed: ' + err + ', trying static MP3');
+        // Fallback: static MP3
         try {
-          log('trying static MP3 fallback');
           const audioUrl = isReturning ? '/audio/greeting-returning.mp3' : '/audio/greeting-first.mp3';
           const audio = new Audio(audioUrl);
           audio.volume = 1;
           await audio.play();
-          await new Promise<void>((resolve) => { audio.onended = () => resolve(); });
+          await new Promise<void>((resolve) => {
+            audio.onended = () => resolve();
+            setTimeout(() => { audio.pause(); resolve(); }, 10000);
+          });
           log('static fallback complete');
         } catch (fallbackErr) {
           log('static fallback also failed: ' + fallbackErr);
@@ -288,16 +333,22 @@ export function useVoiceSession(): UseVoiceSessionReturn {
         log('listening started');
       }
     },
-    [playTTS, speechRecognition, audioPlayer]
+    [speechRecognition]
   );
 
   const endSession = useCallback(() => {
     isSessionActiveRef.current = false;
     speechRecognition.stopListening();
     stopMicMeter();
-    audioPlayer.stop();
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     setState('idle');
-  }, [speechRecognition, stopMicMeter, audioPlayer]);
+  }, [speechRecognition, stopMicMeter]);
 
   const toggleMic = useCallback(() => {
     if (stateRef.current === 'listening') {
@@ -320,7 +371,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     startSession,
     endSession,
     toggleMic,
-    analyserNode: audioPlayer.analyserNode,
+    analyserNode: null, // Orb animation disabled — Web Audio API was causing hangs
     micLevel,
     browserSupported: speechRecognition.browserSupported,
     lastError,
