@@ -2,7 +2,6 @@ import {
   getTicketSlug,
   loadCourseContent,
   loadQuestions,
-  listTopics,
 } from "./knowledge-loader";
 
 /**

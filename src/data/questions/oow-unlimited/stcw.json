@@ -15,7 +15,11 @@
       "How does the STCW Code differ from the Convention itself?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Candidates should understand the two-part structure: Convention (Articles and Regulations) and STCW Code (Part A mandatory, Part B recommendatory). The competence tables in the STCW Code Part A define what must be demonstrated. Regulation I/9 covers medical fitness requirements."
+    "examiner_notes": "Candidates should understand the two-part structure: Convention (Articles and Regulations) and STCW Code (Part A mandatory, Part B recommendatory). The competence tables in the STCW Code Part A define what must be demonstrated. Regulation I/9 covers medical fitness requirements.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stcw-002",
@@ -33,7 +37,11 @@
       "What happens if rest hour violations are found during Port State Control?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "The two-period division of rest is frequently tested. Candidates should know that the hours of rest records must be in the seafarer's working language and English. MLC Regulation 2.3 sets maximum work hours (14h/24h and 72h/7 days) as an alternative framework."
+    "examiner_notes": "The two-period division of rest is frequently tested. Candidates should know that the hours of rest records must be in the seafarer's working language and English. MLC Regulation 2.3 sets maximum work hours (14h/24h and 72h/7 days) as an alternative framework.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stcw-003",
@@ -51,7 +59,11 @@
       "What are the common BRM failures identified in accident investigations?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Accident investigation reports (e.g., MAIB, NTSB) consistently identify poor BRM as a contributing factor. Candidates should discuss how authority gradients can prevent junior officers from raising concerns. The closed-loop communication concept is essential."
+    "examiner_notes": "Accident investigation reports (e.g., MAIB, NTSB) consistently identify poor BRM as a contributing factor. Candidates should discuss how authority gradients can prevent junior officers from raising concerns. The closed-loop communication concept is essential.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stcw-004",
@@ -69,7 +81,11 @@
       "How does STCW address training requirements for seafarers on ships using IGF Code fuels?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Regulation I/14 familiarisation is a Port State Control focus area — companies must provide ship-specific familiarisation before crew undertake duties. The four basic training elements are often remembered by the acronym FPFF (Fire, Personal survival, First aid, social responsibilities/Familiarisation)."
+    "examiner_notes": "Regulation I/14 familiarisation is a Port State Control focus area — companies must provide ship-specific familiarisation before crew undertake duties. The four basic training elements are often remembered by the acronym FPFF (Fire, Personal survival, First aid, social responsibilities/Familiarisation).",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stcw-005",
@@ -87,6 +103,10 @@
       "What constitutes an unfit condition for taking over a navigational watch?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Section A-VIII/2 Part 3 of the STCW Code provides detailed guidance. The obligation to call the master is critical — candidates should list specific circumstances (restricted visibility, traffic, equipment failure, concern about position, weather, any uncertainty). Fitness includes rest hour compliance."
+    "examiner_notes": "Section A-VIII/2 Part 3 of the STCW Code provides detailed guidance. The obligation to call the master is critical — candidates should list specific circumstances (restricted visibility, traffic, equipment failure, concern about position, weather, any uncertainty). Fitness includes rest hour compliance.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

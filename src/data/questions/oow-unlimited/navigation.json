@@ -14,7 +14,11 @@
       "If the cocked hat falls near a danger, where should you assume your position to be?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Candidates must understand compass error application. When the cocked hat is near a danger, always assume the position nearest the danger. Discuss systematic vs random errors."
+    "examiner_notes": "Candidates must understand compass error application. When the cocked hat is near a danger, always assume the position nearest the danger. Discuss systematic vs random errors.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "navigation-002",
@@ -31,7 +35,11 @@
       "How would you detect GPS spoofing?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates should not treat GPS as infallible. Look for awareness of RAIM, integrity monitoring, and the importance of cross-referencing with radar, visual bearings, or echo sounder. IMO Performance Standards for GPS should be mentioned."
+    "examiner_notes": "Candidates should not treat GPS as infallible. Look for awareness of RAIM, integrity monitoring, and the importance of cross-referencing with radar, visual bearings, or echo sounder. IMO Performance Standards for GPS should be mentioned.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "navigation-003",
@@ -48,7 +56,11 @@
       "What is the difference between variation and deviation?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "This is a fundamental skill. Candidates must be able to apply the CADET rule (Compass ADd East for True). Transits provide the most accurate means of checking compass error."
+    "examiner_notes": "This is a fundamental skill. Candidates must be able to apply the CADET rule (Compass ADd East for True). Transits provide the most accurate means of checking compass error.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "navigation-004",
@@ -65,7 +77,11 @@
       "Explain composite great circle sailing and when it would be used."
     ],
     "difficulty": "advanced",
-    "examiner_notes": "Candidates should be able to calculate initial and final great circle courses using spherical trigonometry or Napier's rules. Discuss the vertex and when the great circle route might enter ice zones or restricted areas."
+    "examiner_notes": "Candidates should be able to calculate initial and final great circle courses using spherical trigonometry or Napier's rules. Discuss the vertex and when the great circle route might enter ice zones or restricted areas.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "navigation-005",
@@ -82,7 +98,11 @@
       "What are the obligations regarding the inshore traffic zone?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates should know that Rule 10 does not relieve any vessel of obligations under other rules. Fishing vessels and vessels less than 20m may use the inshore traffic zone. Anchoring in a TSS is generally prohibited."
+    "examiner_notes": "Candidates should know that Rule 10 does not relieve any vessel of obligations under other rules. Fishing vessels and vessels less than 20m may use the inshore traffic zone. Anchoring in a TSS is generally prohibited.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "navigation-006",
@@ -99,7 +119,11 @@
       "How would you determine the effect of an alteration of course on CPA using the plotting sheet?"
     ],
     "difficulty": "advanced",
-    "examiner_notes": "Candidates must demonstrate practical radar plotting competence. They should understand relative vs true motion displays, the difference between relative and true vectors, and know how to construct a trial manoeuvre on the plotting sheet."
+    "examiner_notes": "Candidates must demonstrate practical radar plotting competence. They should understand relative vs true motion displays, the difference between relative and true vectors, and know how to construct a trial manoeuvre on the plotting sheet.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "navigation-007",
@@ -116,6 +140,10 @@
       "What is the difference between set and drift?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates should be able to work with tidal diamonds and atlases practically. They must understand the concept of an estimated position (EP) vs dead reckoning (DR) position and when each is used."
+    "examiner_notes": "Candidates should be able to work with tidal diamonds and atlases practically. They must understand the concept of an estimated position (EP) vs dead reckoning (DR) position and when each is used.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

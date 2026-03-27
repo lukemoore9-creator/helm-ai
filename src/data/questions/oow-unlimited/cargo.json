@@ -15,7 +15,11 @@
       "What are the requirements for trimming and securing grain in partially filled holds?"
     ],
     "difficulty": "advanced",
-    "examiner_notes": "Candidates should understand volumetric heeling moments and how to use the grain stability booklet. The assumption of a 15-degree void shift (or 25 degrees for filled compartments) is a key concept. Strapping, bundling, and overstowing techniques for partially filled holds should be discussed."
+    "examiner_notes": "Candidates should understand volumetric heeling moments and how to use the grain stability booklet. The assumption of a 15-degree void shift (or 25 degrees for filled compartments) is a key concept. Strapping, bundling, and overstowing techniques for partially filled holds should be discussed.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "cargo-002",
@@ -33,7 +37,11 @@
       "What happens if shear force or bending moment limits are exceeded?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates should demonstrate practical understanding of cargo planning software and manual calculations. The loading sequence is critical — block loading of a single hold can cause hogging or sagging beyond structural limits. Trim optimisation for fuel efficiency is an increasingly examined topic."
+    "examiner_notes": "Candidates should demonstrate practical understanding of cargo planning software and manual calculations. The loading sequence is critical — block loading of a single hold can cause hogging or sagging beyond structural limits. Trim optimisation for fuel efficiency is an increasingly examined topic.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "cargo-003",
@@ -51,7 +59,11 @@
       "What are the emergency response procedures if a container of Class 3 goods catches fire?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates should know the nine classes and common examples. The segregation table in the IMDG Code determines minimum separation distances. Documentation requirements include: Dangerous Goods Declaration, container packing certificate, and the Dangerous Goods Manifest. EmS Guide (Emergency Schedules) provides response procedures."
+    "examiner_notes": "Candidates should know the nine classes and common examples. The segregation table in the IMDG Code determines minimum separation distances. Documentation requirements include: Dangerous Goods Declaration, container packing certificate, and the Dangerous Goods Manifest. EmS Guide (Emergency Schedules) provides response procedures.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "cargo-004",
@@ -69,7 +81,11 @@
       "What should the master do if the declared moisture content is close to the TML?"
     ],
     "difficulty": "advanced",
-    "examiner_notes": "Multiple casualties (Bulk Jupiter, Nasco Diamond, etc.) have resulted from cargo liquefaction. Candidates should know the can test procedure: fill a can half full, strike it on a hard surface, observe if free moisture or fluid state appears. If in doubt, refuse to load until independent testing confirms moisture content is within TML."
+    "examiner_notes": "Multiple casualties (Bulk Jupiter, Nasco Diamond, etc.) have resulted from cargo liquefaction. Candidates should know the can test procedure: fill a can half full, strike it on a hard surface, observe if free moisture or fluid state appears. If in doubt, refuse to load until independent testing confirms moisture content is within TML.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "cargo-005",
@@ -87,6 +103,10 @@
       "What inspections should be made during the voyage?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "The CSM is an inspectable document under Port State Control. Candidates should understand that securing forces must counteract the combined effects of rolling, pitching, and heaving. Advanced method calculations in the CSS Code Annex 13 provide a quantitative approach. Weather routing to avoid heavy seas is part of cargo care."
+    "examiner_notes": "The CSM is an inspectable document under Port State Control. Candidates should understand that securing forces must counteract the combined effects of rolling, pitching, and heaving. Advanced method calculations in the CSS Code Annex 13 provide a quantitative approach. Weather routing to avoid heavy seas is part of cargo care.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

@@ -15,7 +15,11 @@
       "How does the tacit acceptance procedure work for amendments?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Candidates should understand the legislative hierarchy: convention adopted by states, implemented through national law, enforced by flag state and port state. The distinction between mandatory codes (ISM, ISPS) and recommendatory codes is important. IMO's committee structure (MSC, MEPC) should be known."
+    "examiner_notes": "Candidates should understand the legislative hierarchy: convention adopted by states, implemented through national law, enforced by flag state and port state. The distinction between mandatory codes (ISM, ISPS) and recommendatory codes is important. IMO's committee structure (MSC, MEPC) should be known.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "maritime-law-002",
@@ -33,7 +37,11 @@
       "What are the master's obligations regarding stowaways?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "The master's overriding authority is a fundamental principle. ISM Code Section 5.2 explicitly states the master shall not be constrained. Candidates should discuss practical scenarios where commercial pressure conflicts with safety decisions. The obligation to render assistance is both a legal duty and a moral imperative."
+    "examiner_notes": "The master's overriding authority is a fundamental principle. ISM Code Section 5.2 explicitly states the master shall not be constrained. Candidates should discuss practical scenarios where commercial pressure conflicts with safety decisions. The obligation to render assistance is both a legal duty and a moral imperative.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "maritime-law-003",
@@ -51,7 +59,11 @@
       "How does the targeting system determine which vessels to inspect?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "PSC is a critical safety net catching substandard vessels. Candidates should know the inspection process: initial inspection (certificates and documents), more detailed inspection (if clear grounds), expanded inspection (for certain vessel types). Detention is reported and affects the flag state's and company's risk profile."
+    "examiner_notes": "PSC is a critical safety net catching substandard vessels. Candidates should know the inspection process: initial inspection (certificates and documents), more detailed inspection (if clear grounds), expanded inspection (for certain vessel types). Detention is reported and affects the flag state's and company's risk profile.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "maritime-law-004",
@@ -69,7 +81,11 @@
       "How does MLC interact with STCW rest hour requirements?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "MLC entered into force in 2013 and has been widely ratified. Candidates should understand the certificate-based enforcement mechanism and the complaint procedures available to seafarers. Accommodation standards (Title 3) specify minimum space, ventilation, and sanitary facility requirements."
+    "examiner_notes": "MLC entered into force in 2013 and has been widely ratified. Candidates should understand the certificate-based enforcement mechanism and the complaint procedures available to seafarers. Accommodation standards (Title 3) specify minimum space, ventilation, and sanitary facility requirements.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "maritime-law-005",
@@ -87,7 +103,11 @@
       "How does the SAR Convention divide the world's oceans into search and rescue regions?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "The duty to render assistance is one of the oldest customs of the sea. Candidates should know the IAMSAR search patterns (expanding square, sector, parallel track) and how they are selected. The distinction between an RCC (Rescue Coordination Centre) and an MRCC (Maritime Rescue Coordination Centre) should be understood."
+    "examiner_notes": "The duty to render assistance is one of the oldest customs of the sea. Candidates should know the IAMSAR search patterns (expanding square, sector, parallel track) and how they are selected. The distinction between an RCC (Rescue Coordination Centre) and an MRCC (Maritime Rescue Coordination Centre) should be understood.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "maritime-law-006",
@@ -105,6 +125,10 @@
       "How do timber load line regulations differ from standard load lines?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Candidates should be able to identify all marks on the load line diagram and explain each zone and season. The conditions of assignment are as important as the marks themselves — a vessel with the correct draught but leaking hatch covers has not met the Convention's requirements. International Load Line Certificate validity is 5 years."
+    "examiner_notes": "Candidates should be able to identify all marks on the load line diagram and explain each zone and season. The conditions of assignment are as important as the marks themselves — a vessel with the correct draught but leaking hatch covers has not met the Convention's requirements. International Load Line Certificate validity is 5 years.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

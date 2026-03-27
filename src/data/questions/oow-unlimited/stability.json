@@ -15,7 +15,11 @@
       "How does the GZ curve change when cargo is loaded at a high tier?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Candidates must be able to sketch and interpret a GZ curve. Key values: initial GM (slope at origin), maximum GZ, angle of maximum GZ, range of stability, and angle of vanishing stability. Free surface effect and its virtual rise of G should be explained."
+    "examiner_notes": "Candidates must be able to sketch and interpret a GZ curve. Key values: initial GM (slope at origin), maximum GZ, angle of maximum GZ, range of stability, and angle of vanishing stability. Free surface effect and its virtual rise of G should be explained.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stability-002",
@@ -33,7 +37,11 @@
       "How do longitudinal baffles reduce free surface effect?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Common misconception: the free surface moment depends on tank geometry, not the quantity of liquid (for wall-sided tanks). Longitudinal subdivisions reduce FSE dramatically — dividing a tank in two reduces it by a factor of four (breadth cubed relationship)."
+    "examiner_notes": "Common misconception: the free surface moment depends on tank geometry, not the quantity of liquid (for wall-sided tanks). Longitudinal subdivisions reduce FSE dramatically — dividing a tank in two reduces it by a factor of four (breadth cubed relationship).",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stability-003",
@@ -52,7 +60,11 @@
       "How do weather criteria (severe wind and rolling) feature in the IS Code?"
     ],
     "difficulty": "advanced",
-    "examiner_notes": "Candidates should know the numerical values and understand their significance. The weather criterion (Regulation 2.3 of the IS Code) is particularly important — it assesses the vessel's ability to withstand the combined effect of beam wind and rolling. Grain stability requires a special angle of heel calculation."
+    "examiner_notes": "Candidates should know the numerical values and understand their significance. The weather criterion (Regulation 2.3 of the IS Code) is particularly important — it assesses the vessel's ability to withstand the combined effect of beam wind and rolling. Grain stability requires a special angle of heel calculation.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stability-004",
@@ -70,7 +82,11 @@
       "What corrections must be applied to the inclining experiment results?"
     ],
     "difficulty": "advanced",
-    "examiner_notes": "Required on completion of build and after major modifications. Candidates should know the practical arrangements: at least two pendulums, weights typically 1-2% of displacement, calm conditions, moorings slack, no personnel movement during readings. The lightweight survey must be conducted simultaneously."
+    "examiner_notes": "Required on completion of build and after major modifications. Candidates should know the practical arrangements: at least two pendulums, weights typically 1-2% of displacement, calm conditions, moorings slack, no personnel movement during readings. The lightweight survey must be conducted simultaneously.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "stability-005",
@@ -88,6 +104,10 @@
       "What is the difference between list and loll?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Candidates should understand the distinction between list (caused by G being off-centreline) and loll (caused by negative GM at small angles with positive stability at larger angles). Correcting a loll by ballasting on the high side is dangerous — low-point ballasting is the correct approach."
+    "examiner_notes": "Candidates should understand the distinction between list (caused by G being off-centreline) and loll (caused by negative GM at small angles with positive stability at larger angles). Correcting a loll by ballasting on the high side is dangerous — low-point ballasting is the correct approach.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

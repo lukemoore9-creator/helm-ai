@@ -4,10 +4,22 @@ import path from "path";
 export interface Question {
   id: string;
   question: string;
+  ideal_answer: string | null;
   key_points: string[];
+  unacceptable_answers: string[];
+  examiner_preferences: {
+    wants_rule_number_first?: boolean;
+    wants_practical_examples?: boolean;
+    style_notes?: string;
+  } | null;
   follow_ups: string[];
-  difficulty: "basic" | "intermediate" | "advanced";
+  common_mistakes: string[];
+  difficulty: number;
+  source_examiner: string | null;
   examiner_notes: string;
+  related_topics: string[];
+  visual: string | null;
+  visual_instruction: string | null;
 }
 
 const DATA_DIR = path.join(process.cwd(), "src", "data");
@@ -80,23 +92,14 @@ export function loadCourseContent(
 }
 
 /**
- * Loads question bank for a ticket type. If topic is provided, loads only that topic.
- * Otherwise loads all topics and merges them.
+ * Loads question bank for a specific topic only.
+ * Never loads all topics at once — that creates prompts too large for fast responses.
  */
 export function loadQuestions(
   ticketSlug: string,
-  topic?: string
+  topic: string
 ): Question[] {
-  if (topic) {
-    return loadTopicQuestions(ticketSlug, topic);
-  }
-
-  const topics = listTopics(ticketSlug);
-  const all: Question[] = [];
-  for (const t of topics) {
-    all.push(...loadTopicQuestions(ticketSlug, t));
-  }
-  return all;
+  return loadTopicQuestions(ticketSlug, topic);
 }
 
 function loadTopicQuestions(

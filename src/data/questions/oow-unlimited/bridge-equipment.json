@@ -38,7 +38,10 @@
     ],
     "difficulty": 1,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: this was the opening technical question after 20min of casual career chat. Examiner then drilled into individual pieces of equipment. Know your own bridge cold."
+    "examiner_notes": "From real exam: this was the opening technical question after 20min of casual career chat. Examiner then drilled into individual pieces of equipment. Know your own bridge cold.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "bridge-equipment-002",
@@ -76,7 +79,10 @@
     ],
     "difficulty": 3,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: examiner asked about ECDIS disadvantages, then showed a screenshot of ECDIS screen and asked where to find variation. Followed up with safety contour/depth configuration."
+    "examiner_notes": "From real exam: examiner asked about ECDIS disadvantages, then showed a screenshot of ECDIS screen and asked where to find variation. Followed up with safety contour/depth configuration.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "bridge-equipment-003",
@@ -104,7 +110,10 @@
     ],
     "difficulty": 3,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: examiner wanted to see the candidate understand GPS dependency and have practical fallback skills. Connected to radar PI discussion."
+    "examiner_notes": "From real exam: examiner wanted to see the candidate understand GPS dependency and have practical fallback skills. Connected to radar PI discussion.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "bridge-equipment-004",
@@ -125,7 +134,10 @@
     ],
     "difficulty": 2,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: examiner discussed AIS at length, particularly disadvantages and who must carry it. Practical understanding expected."
+    "examiner_notes": "From real exam: examiner discussed AIS at length, particularly disadvantages and who must carry it. Practical understanding expected.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "bridge-equipment-005",
@@ -147,7 +159,10 @@
     ],
     "difficulty": 2,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: this was asked early as a fundamentals check. Examiner wanted discussion about deviation causes specifically."
+    "examiner_notes": "From real exam: this was asked early as a fundamentals check. Examiner wanted discussion about deviation causes specifically.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "bridge-equipment-006",
@@ -172,6 +187,9 @@
     ],
     "difficulty": 3,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: examiner asked about PI as follow-up to GPS failure scenario. Asked specifically why not use a buoy (answer: buoys can drag or be off station). High-value practical question."
+    "examiner_notes": "From real exam: examiner asked about PI as follow-up to GPS failure scenario. Asked specifically why not use a buoy (answer: buoys can drag or be off station). High-value practical question.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

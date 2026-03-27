@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { auth } from "@clerk/nextjs/server";
 import { buildExaminerPrompt } from "@/lib/prompts";
 import { createServiceClient } from "@/lib/supabase/server";
+import { loadRecentCorrections } from "@/lib/corrections-loader";
 
 export const maxDuration = 30;
 
@@ -75,18 +76,28 @@ STUDENT CONTEXT:
       console.warn("Failed to load student context:", err);
     }
 
+    // Load trainer corrections (non-blocking)
+    let corrections = "";
+    try {
+      corrections = await loadRecentCorrections(ticketType);
+    } catch (err) {
+      console.warn("Failed to load corrections:", err);
+    }
+
     let systemPrompt: string;
     try {
       systemPrompt =
         buildExaminerPrompt(ticketType || "OOW Unlimited", effectiveTopic) +
-        studentContext;
+        studentContext +
+        corrections;
     } catch (err) {
       console.error("Failed to build examiner prompt from knowledge base:", err);
       systemPrompt =
         `You are Daniel, a senior maritime oral examiner. You are conducting an oral exam for a ${ticketType || "OOW Unlimited"} candidate` +
         (topic ? ` on the topic of ${topic}.` : ".") +
         ` Ask questions, probe understanding, and assess competency. Be thorough but fair.` +
-        studentContext;
+        studentContext +
+        corrections;
     }
 
     // Use Haiku for opening greeting (fast TTFT), Sonnet for exam questions

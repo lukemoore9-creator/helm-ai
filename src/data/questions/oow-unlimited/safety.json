@@ -41,7 +41,10 @@
     ],
     "difficulty": 3,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: examiner gave flashcard answer a hard time. Wanted genuine practical response about what the candidate would physically do, not recitation. Discussed MOB for extended period."
+    "examiner_notes": "From real exam: examiner gave flashcard answer a hard time. Wanted genuine practical response about what the candidate would physically do, not recitation. Discussed MOB for extended period.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "safety-002",
@@ -69,6 +72,9 @@
     ],
     "difficulty": 2,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: examiner asked about PTW, risk assessment, and specifically COSWP. Wanted to know the candidate knew where to find the information, not just the procedure."
+    "examiner_notes": "From real exam: examiner asked about PTW, risk assessment, and specifically COSWP. Wanted to know the candidate knew where to find the information, not just the procedure.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

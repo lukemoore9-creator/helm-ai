@@ -15,7 +15,11 @@
       "What avoidance action should be taken in the dangerous semicircle vs the navigable semicircle?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates must know Buys Ballot's Law to determine storm centre bearing. In the Northern Hemisphere, the dangerous semicircle is to the right of the storm track. Avoidance rules differ by hemisphere and semicircle position."
+    "examiner_notes": "Candidates must know Buys Ballot's Law to determine storm centre bearing. In the Northern Hemisphere, the dangerous semicircle is to the right of the storm track. Avoidance rules differ by hemisphere and semicircle position.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "meteorology-002",
@@ -32,7 +36,11 @@
       "If the wind is veering, what does this indicate about the storm's position relative to you?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "This is a fundamental tool for practical seamanship. Candidates should apply it in both hemispheres. In the Southern Hemisphere the dangerous semicircle is to the left of the storm track. Ensure candidates understand veering vs backing wind implications."
+    "examiner_notes": "This is a fundamental tool for practical seamanship. Candidates should apply it in both hemispheres. In the Southern Hemisphere the dangerous semicircle is to the left of the storm track. Ensure candidates understand veering vs backing wind implications.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "meteorology-003",
@@ -49,7 +57,11 @@
       "What precautions should be taken when fog is expected?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Advection fog is the most common and persistent type at sea — it can last for days and does not clear by day like radiation fog. Candidates should link fog types to Rule 19 obligations and the requirement for reduced speed."
+    "examiner_notes": "Advection fog is the most common and persistent type at sea — it can last for days and does not clear by day like radiation fog. Candidates should link fog types to Rule 19 obligations and the requirement for reduced speed.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "meteorology-004",
@@ -67,7 +79,11 @@
       "How would you use knowledge of prevailing winds in passage planning?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates should connect theoretical wind patterns to practical routing decisions. Seasonal shifts in the ITCZ affect monsoon patterns. The relationship between wind patterns and ocean currents is often explored in follow-up questioning."
+    "examiner_notes": "Candidates should connect theoretical wind patterns to practical routing decisions. Seasonal shifts in the ITCZ affect monsoon patterns. The relationship between wind patterns and ocean currents is often explored in follow-up questioning.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "meteorology-005",
@@ -85,7 +101,11 @@
       "How do you estimate wind speed from isobar spacing?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "Candidates should be able to read and interpret an actual synoptic chart. Geostrophic wind scale usage should be known. The sequence of cloud types and weather changes across warm and cold fronts is fundamental knowledge for watchkeeping officers."
+    "examiner_notes": "Candidates should be able to read and interpret an actual synoptic chart. Geostrophic wind scale usage should be known. The sequence of cloud types and weather changes across warm and cold fronts is fundamental knowledge for watchkeeping officers.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "meteorology-006",
@@ -103,6 +123,10 @@
       "What practical steps can the OOW take to mitigate the risk?"
     ],
     "difficulty": "advanced",
-    "examiner_notes": "This topic gained prominence after several major container ship incidents. Candidates should understand the relationship between encounter period and natural roll period, and know that parametric rolling amplifies in 2:1 ratio of natural roll period to encounter period."
+    "examiner_notes": "This topic gained prominence after several major container ship incidents. Candidates should understand the relationship between encounter period and natural roll period, and know that parametric rolling amplifies in 2:1 ratio of natural roll period to encounter period.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

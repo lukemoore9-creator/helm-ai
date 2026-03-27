@@ -32,7 +32,11 @@
       "Not knowing when head-on becomes crossing"
     ],
     "difficulty": 2,
-    "examiner_notes": "Candidates should reference Rule 14 specifically. Common mistake: forgetting that this rule applies when vessels are in sight of one another."
+    "examiner_notes": "Candidates should reference Rule 14 specifically. Common mistake: forgetting that this rule applies when vessels are in sight of one another.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "colregs-002",
@@ -67,7 +71,11 @@
       "Not knowing Rule 17 stand-on obligations"
     ],
     "difficulty": 2,
-    "examiner_notes": "Ensure candidates understand the starboard-side priority rule. They should explain the difference between give-way and stand-on obligations clearly."
+    "examiner_notes": "Ensure candidates understand the starboard-side priority rule. They should explain the difference between give-way and stand-on obligations clearly.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "colregs-009",
@@ -103,7 +111,10 @@
     ],
     "difficulty": 2,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam report: examiner showed slides of vessel light configurations and wanted definitions plus practical actions. Did not want flashcard answers."
+    "examiner_notes": "From real exam report: examiner showed slides of vessel light configurations and wanted definitions plus practical actions. Did not want flashcard answers.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "colregs-010",
@@ -143,7 +154,10 @@
     ],
     "difficulty": 4,
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
-    "examiner_notes": "From real exam: examiner showed radar screen with two targets (port forward and abeam starboard). Wanted full Rule 19 application with practical radar plotting including WAO triangle and trial manoeuvre. This is a high-value question."
+    "examiner_notes": "From real exam: examiner showed radar screen with two targets (port forward and abeam starboard). Wanted full Rule 19 application with practical radar plotting including WAO triangle and trial manoeuvre. This is a high-value question.",
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "colregs-011",
@@ -182,6 +196,7 @@
     "source_examiner": "Unknown — OOW 3000GT Yacht exam, Sep 2024",
     "visual": "buoys/starboard-lateral-iala-a.png",
     "visual_instruction": "Show this buoy image. Do not describe it — candidate must identify it.",
-    "examiner_notes": "From real exam: examiner showed multiple buoys in rapid succession. Wanted identification, meaning, and actions for each. This is a core visual identification skill."
+    "examiner_notes": "From real exam: examiner showed multiple buoys in rapid succession. Wanted identification, meaning, and actions for each. This is a core visual identification skill.",
+    "related_topics": []
   }
 ]

@@ -14,7 +14,11 @@
       "How does DSC differ from conventional voice calling?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Candidates must know the four sea areas and the progressive equipment requirements. SOLAS Chapter IV defines the requirements. Two GMDSS operators are required for A3/A4 vessels. The relationship between sea area and coast station coverage is the determining factor."
+    "examiner_notes": "Candidates must know the four sea areas and the progressive equipment requirements. SOLAS Chapter IV defines the requirements. Two GMDSS operators are required for A3/A4 vessels. The relationship between sea area and coast station coverage is the determining factor.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "gmdss-002",
@@ -33,7 +37,11 @@
       "How do you send a distress relay on behalf of another vessel?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "The procedure must be clear and correct — false alerts are a significant problem and candidates must know the cancellation procedure (transmit cancellation on Channel 70 and announce on Channel 16). Nature of distress should be selected if time permits. Position may need manual entry if GPS is not connected."
+    "examiner_notes": "The procedure must be clear and correct — false alerts are a significant problem and candidates must know the cancellation procedure (transmit cancellation on Channel 70 and announce on Channel 16). Nature of distress should be selected if time permits. Position may need manual entry if GPS is not connected.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "gmdss-003",
@@ -52,7 +60,11 @@
       "What is the procedure if an EPIRB activates accidentally?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "The HRU replacement date and annual testing are Port State Control inspection items. GPS-equipped EPIRBs significantly reduce search area. Candidates should know the alert path: EPIRB to satellite to LUT (Local User Terminal) to MCC (Mission Control Centre) to RCC (Rescue Coordination Centre)."
+    "examiner_notes": "The HRU replacement date and annual testing are Port State Control inspection items. GPS-equipped EPIRBs significantly reduce search area. Candidates should know the alert path: EPIRB to satellite to LUT (Local User Terminal) to MCC (Mission Control Centre) to RCC (Rescue Coordination Centre).",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "gmdss-004",
@@ -70,7 +82,11 @@
       "How does EGC (Enhanced Group Calling) via Inmarsat complement NAVTEX?"
     ],
     "difficulty": "basic",
-    "examiner_notes": "Navigational warnings, meteorological warnings, and SAR information cannot be rejected by the receiver. Candidates should know how to programme station and subject selectors. NAVTEX is being supplemented by NAVDAT on 500 kHz for higher data rate broadcasts."
+    "examiner_notes": "Navigational warnings, meteorological warnings, and SAR information cannot be rejected by the receiver. Candidates should know how to programme station and subject selectors. NAVTEX is being supplemented by NAVDAT on 500 kHz for higher data rate broadcasts.",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   },
   {
     "id": "gmdss-005",
@@ -88,6 +104,10 @@
       "How would you test a SART and how often?"
     ],
     "difficulty": "intermediate",
-    "examiner_notes": "AIS-SART advantage: detected by any AIS-equipped vessel regardless of radar use, provides precise position. Radar SART advantage: works without AIS, visible on radar screen as distinctive pattern. Candidates should know that radar SART only responds to X-band (3cm) radar, not S-band (10cm)."
+    "examiner_notes": "AIS-SART advantage: detected by any AIS-equipped vessel regardless of radar use, provides precise position. Radar SART advantage: works without AIS, visible on radar screen as distinctive pattern. Candidates should know that radar SART only responds to X-band (3cm) radar, not S-band (10cm).",
+    "source_examiner": null,
+    "related_topics": [],
+    "visual": null,
+    "visual_instruction": null
   }
 ]

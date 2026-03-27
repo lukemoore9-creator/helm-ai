@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { isBetaUser } from "@/lib/beta-access";
 
 export function Header() {
   const pathname = usePathname();
+  const { user } = useUser();
 
   // Hide on auth and onboarding pages
   if (
@@ -15,6 +17,9 @@ export function Header() {
   ) {
     return null;
   }
+
+  const email = user?.emailAddresses?.[0]?.emailAddress;
+  const showTrainer = isBetaUser(email);
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#E5E7EB] bg-[#FFFFFF]">
@@ -30,6 +35,14 @@ export function Header() {
           >
             Dashboard
           </Link>
+          {showTrainer && (
+            <Link
+              href="/trainer"
+              className="text-sm font-medium text-[#6B7280] transition-colors hover:text-[#111111]"
+            >
+              Trainer
+            </Link>
+          )}
           <UserButton
             appearance={{
               elements: {
