@@ -19,6 +19,8 @@ interface UseVoiceSessionReturn {
   interimTranscript: string;
   startSession: (ticketType: string, firstName?: string, totalSessions?: number) => void;
   endSession: () => void;
+  pauseSession: () => void;
+  resumeSession: () => void;
   toggleMic: () => void;
   analyserNode: AnalyserNode | null;
   micLevel: number;
@@ -62,7 +64,8 @@ function detectTopic(text: string): string | null {
  *  Returns a promise that resolves when playback ends. */
 async function fetchAndPlayAudio(
   text: string,
-  log?: (msg: string) => void
+  log?: (msg: string) => void,
+  audioRef?: { current: HTMLAudioElement | null }
 ): Promise<void> {
   const l = log || (() => {});
 
@@ -90,6 +93,7 @@ async function fetchAndPlayAudio(
   return new Promise<void>((resolve, reject) => {
     const audio = new Audio(blobUrl);
     audio.volume = 1;
+    if (audioRef) audioRef.current = audio;
 
     // Hard 15-second timeout
     const timeout = setTimeout(() => {
@@ -237,7 +241,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
 
         // TTS: fetch audio blob → bare Audio element
         setState('speaking');
-        await fetchAndPlayAudio(fullText, log);
+        await fetchAndPlayAudio(fullText, log, currentAudioRef);
         log('TTS playback complete');
 
         if (isSessionActiveRef.current) {
@@ -307,7 +311,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
       log('greeting text ready, fetching TTS');
 
       try {
-        await fetchAndPlayAudio(greetingText, log);
+        await fetchAndPlayAudio(greetingText, log, currentAudioRef);
         log('greeting playback complete');
       } catch (err) {
         log('TTS greeting failed: ' + err + ', trying static MP3');
@@ -350,6 +354,26 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     setState('idle');
   }, [speechRecognition, stopMicMeter]);
 
+  const pauseSession = useCallback(() => {
+    speechRecognition.stopListening();
+    stopMicMeter();
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setState('idle');
+  }, [speechRecognition, stopMicMeter]);
+
+  const resumeSession = useCallback(() => {
+    if (isSessionActiveRef.current) {
+      setState('listening');
+      speechRecognition.startListening();
+    }
+  }, [speechRecognition]);
+
   const toggleMic = useCallback(() => {
     if (stateRef.current === 'listening') {
       speechRecognition.stopListening();
@@ -370,6 +394,8 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     interimTranscript: speechRecognition.interimTranscript,
     startSession,
     endSession,
+    pauseSession,
+    resumeSession,
     toggleMic,
     analyserNode: null, // Orb animation disabled — Web Audio API was causing hangs
     micLevel,

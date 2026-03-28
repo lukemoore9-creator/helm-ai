@@ -34,10 +34,12 @@ function CorrectionButtons({
   entry,
   ticketType,
   onSaved,
+  onPause,
 }: {
   entry: TranscriptEntry;
   ticketType: string;
   onSaved: () => void;
+  onPause?: () => void;
 }) {
   const [mode, setMode] = useState<"idle" | "correct" | "flag">("idle");
   const [text, setText] = useState("");
@@ -91,13 +93,13 @@ function CorrectionButtons({
     return (
       <div className="mt-2 flex gap-2">
         <button
-          onClick={() => setMode("correct")}
+          onClick={() => { onPause?.(); setMode("correct"); }}
           className="inline-flex items-center gap-1 rounded border border-[#2563EB] px-2 py-1 text-xs font-medium text-[#2563EB] hover:bg-[#EFF6FF] transition-colors"
         >
           <Check className="h-3 w-3" /> Correct
         </button>
         <button
-          onClick={() => setMode("flag")}
+          onClick={() => { onPause?.(); setMode("flag"); }}
           className="inline-flex items-center gap-1 rounded border border-[#EF4444] px-2 py-1 text-xs font-medium text-[#EF4444] hover:bg-[#FEF2F2] transition-colors"
         >
           <Flag className="h-3 w-3" /> Flag
@@ -127,7 +129,7 @@ function CorrectionButtons({
           {status === "saving" ? "Saving..." : mode === "correct" ? "Save Correction" : "Save Flag"}
         </button>
         <button
-          onClick={() => { setMode("idle"); setText(""); }}
+          onClick={() => { setMode("idle"); setText(""); onSaved(); }}
           className="rounded px-3 py-1 text-xs font-medium text-[#6B7280] hover:text-[#111111]"
         >
           Cancel
@@ -145,10 +147,14 @@ function TrainerTranscriptPanel({
   transcript,
   interimTranscript,
   ticketType,
+  onPause,
+  onCorrectionDone,
 }: {
   transcript: TranscriptEntry[];
   interimTranscript: string;
   ticketType: string;
+  onPause?: () => void;
+  onCorrectionDone?: () => void;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -185,7 +191,7 @@ function TrainerTranscriptPanel({
                 {msg.text}
               </p>
               {isExaminer && (
-                <CorrectionButtons entry={msg} ticketType={ticketType} onSaved={() => {}} />
+                <CorrectionButtons entry={msg} ticketType={ticketType} onSaved={() => onCorrectionDone?.()} onPause={onPause} />
               )}
             </div>
           );
@@ -214,6 +220,8 @@ export default function TrainerPage() {
     interimTranscript,
     startSession,
     endSession,
+    pauseSession,
+    resumeSession,
     toggleMic,
     analyserNode,
     micLevel,
@@ -226,6 +234,7 @@ export default function TrainerPage() {
   const [hasStarted, setHasStarted] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [micError, setMicError] = useState(false);
+  const [sessionPaused, setSessionPaused] = useState(false);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -357,8 +366,10 @@ export default function TrainerPage() {
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center">
-        <Orb state={state} analyserNode={analyserNode} micLevel={micLevel} />
-        <p className="mt-8 text-sm text-[#6B7280]">{STATE_LABELS[state]}</p>
+        <Orb state={sessionPaused ? "idle" : state} analyserNode={analyserNode} micLevel={micLevel} />
+        <p className="mt-8 text-sm text-[#6B7280]">
+          {sessionPaused ? "Session paused — submit your correction to continue" : STATE_LABELS[state]}
+        </p>
         <p className="mt-2 font-mono text-sm tabular-nums text-[#9CA3AF]">{formatTime(elapsed)}</p>
         {lastError && (
           <div className="mt-6 flex max-w-md items-start gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-4 py-3">
@@ -372,21 +383,34 @@ export default function TrainerPage() {
         transcript={transcript}
         interimTranscript={interimTranscript}
         ticketType={ticketSlug}
+        onPause={() => { pauseSession(); setSessionPaused(true); }}
+        onCorrectionDone={() => {}}
       />
 
-      <div className="flex h-20 shrink-0 items-center justify-center border-t border-[#E5E7EB]">
-        <button
-          onClick={toggleMic}
-          disabled={state === "processing" || state === "speaking"}
-          className={`flex h-14 w-14 items-center justify-center rounded-full transition-all ${
-            state === "listening"
-              ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/25"
-              : "border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F7F8FA]"
-          } disabled:cursor-not-allowed disabled:opacity-40`}
-        >
-          {state === "listening" ? <Mic className="h-6 w-6" /> : <MicOff className="h-5 w-5" />}
-        </button>
-      </div>
+      {sessionPaused ? (
+        <div className="flex shrink-0 items-center justify-center border-t border-[#E5E7EB] px-6 py-4">
+          <Button
+            onClick={() => { setSessionPaused(false); resumeSession(); }}
+            className="h-[44px] w-full max-w-md gap-2 rounded-lg bg-[#2563EB] text-[15px] font-semibold text-white hover:bg-[#1D4ED8] active:scale-[0.98]"
+          >
+            Continue Session
+          </Button>
+        </div>
+      ) : (
+        <div className="flex h-20 shrink-0 items-center justify-center border-t border-[#E5E7EB]">
+          <button
+            onClick={toggleMic}
+            disabled={state === "processing" || state === "speaking"}
+            className={`flex h-14 w-14 items-center justify-center rounded-full transition-all ${
+              state === "listening"
+                ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/25"
+                : "border border-[#E5E7EB] bg-white text-[#6B7280] hover:bg-[#F7F8FA]"
+            } disabled:cursor-not-allowed disabled:opacity-40`}
+          >
+            {state === "listening" ? <Mic className="h-6 w-6" /> : <MicOff className="h-5 w-5" />}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
