@@ -17,6 +17,23 @@ const STATE_LABELS: Record<string, string> = {
   speaking: "Speaking...",
 };
 
+const TICKET_NAMES: Record<string, string> = {
+  'oow-unlimited': 'OOW Unlimited',
+  'oow-nearcoastal': 'OOW Near Coastal',
+  'master-200gt': 'Master <200GT',
+  'master-500gt': 'Master <500GT',
+  'master-3000gt': 'Master <3000GT',
+  'master-unlimited': 'Master Unlimited',
+  'ym-offshore': 'Yacht Master Offshore',
+  'ym-ocean': 'Yacht Master Ocean',
+  'mate-200gt-yacht': 'Mate <200GT Yacht',
+  'master-200gt-yacht': 'Master <200GT Yacht',
+  'master-500gt-yacht': 'Master <500GT Yacht',
+  'master-3000gt-yacht': 'Master <3000GT Yacht',
+  'engineer-oow': 'Engineer OOW',
+  'eto': 'ETO',
+};
+
 interface StudentProfile {
   student: {
     id: string;
@@ -222,6 +239,8 @@ export default function TrainerPage() {
     endSession,
     pauseSession,
     resumeSession,
+    setTicketType,
+    setAiMode: setAiModeHook,
     toggleMic,
     analyserNode,
     micLevel,
@@ -235,13 +254,21 @@ export default function TrainerPage() {
   const [elapsed, setElapsed] = useState(0);
   const [micError, setMicError] = useState(false);
   const [sessionPaused, setSessionPaused] = useState(false);
+  const [currentTicket, setCurrentTicket] = useState("oow-unlimited");
+  const [aiMode, setAiMode] = useState<'trainer' | 'tutor' | 'examiner'>('trainer');
   const startTimeRef = useRef<number | null>(null);
+
+  // Default trainer page to trainer AI mode
+  useEffect(() => { setAiModeHook('trainer'); }, [setAiModeHook]);
 
   useEffect(() => {
     fetch("/api/student")
       .then((res) => res.json())
       .then((data) => {
-        if (data.student) setProfile(data);
+        if (data.student) {
+          setProfile(data);
+          setCurrentTicket(data.student.ticket_type || "oow-unlimited");
+        }
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -276,7 +303,7 @@ export default function TrainerPage() {
       return;
     }
     setHasStarted(true);
-    startSession(ticketSlug);
+    startSession(currentTicket);
   };
 
   const handleEnd = () => {
@@ -354,7 +381,18 @@ export default function TrainerPage() {
         <span className="text-lg font-bold tracking-tight text-[#111111]">
           Echo <span className="text-sm font-normal text-[#6B7280]">Trainer</span>
         </span>
-        <span className="text-sm font-medium text-[#6B7280]">{ticketName}</span>
+        <select
+          value={currentTicket}
+          onChange={(e) => {
+            setCurrentTicket(e.target.value);
+            setTicketType(e.target.value);
+          }}
+          className="rounded-lg border border-[#E5E7EB] bg-white px-3 py-1.5 text-sm font-medium text-[#6B7280] focus:border-[#2563EB] focus:outline-none"
+        >
+          {Object.entries(TICKET_NAMES).map(([slug, name]) => (
+            <option key={slug} value={slug}>{name}</option>
+          ))}
+        </select>
         <Button
           onClick={handleEnd}
           variant="destructive"
@@ -364,6 +402,23 @@ export default function TrainerPage() {
           End
         </Button>
       </header>
+
+      {/* ── Mode selector ── */}
+      <div className="flex h-10 shrink-0 items-center justify-center gap-1 border-b border-[#E5E7EB]">
+        {(['trainer', 'tutor', 'examiner'] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => { setAiMode(m); setAiModeHook(m); }}
+            className={`rounded-full px-4 py-1 text-xs font-medium transition-colors ${
+              aiMode === m
+                ? 'bg-[#2563EB] text-white'
+                : 'border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F7F8FA]'
+            }`}
+          >
+            {m.charAt(0).toUpperCase() + m.slice(1)}
+          </button>
+        ))}
+      </div>
 
       <main className="flex flex-1 flex-col items-center justify-center">
         <Orb state={sessionPaused ? "idle" : state} analyserNode={analyserNode} micLevel={micLevel} />
@@ -382,7 +437,7 @@ export default function TrainerPage() {
       <TrainerTranscriptPanel
         transcript={transcript}
         interimTranscript={interimTranscript}
-        ticketType={ticketSlug}
+        ticketType={currentTicket}
         onPause={() => { pauseSession(); setSessionPaused(true); }}
         onCorrectionDone={() => {}}
       />

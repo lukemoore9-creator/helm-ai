@@ -11,7 +11,7 @@ const client = new Anthropic();
 export async function POST(req: Request) {
   const t0 = Date.now();
   try {
-    const { messages, ticketType, topic, currentTopic } = await req.json();
+    const { messages, ticketType, topic, currentTopic, mode } = await req.json();
     const effectiveTopic = currentTopic || topic;
 
     const isOpening = messages.length === 1;
@@ -100,13 +100,23 @@ STUDENT CONTEXT:
         corrections;
     }
 
+    // Mode-specific instructions
+    const MODE_INSTRUCTIONS: Record<string, string> = {
+      trainer: "\n\nMODE: TRAINER\nYou are in TRAINER mode. You are a friendly maritime tutor. The student can ask you anything and you will explain it clearly. You are NOT an examiner — you are a teacher. Answer questions, explain concepts, discuss topics. Be warm, patient, and encouraging. If they ask you something, answer it fully.",
+      tutor: "\n\nMODE: TUTOR\nYou are in TUTOR mode. You are a study partner helping the student prepare. Ask questions to test their knowledge, but if they struggle, help them understand. Explain concepts when needed. Balance testing with teaching. Be supportive but push them to think.",
+      examiner: "\n\nMODE: EXAMINER\nYou are in EXAMINER mode. You are conducting a formal oral examination. Do NOT answer the student's questions — YOU ask the questions. If they ask you something, say 'Let me ask you that — what do you think?' and turn it back on them. Be professional, direct, and thorough.",
+    };
+    const modeInstruction = MODE_INSTRUCTIONS[mode || 'examiner'] || MODE_INSTRUCTIONS.examiner;
+    const finalPrompt = systemPrompt + modeInstruction;
+
     const model = "claude-haiku-4-5-20251001";
-    console.log(`[Chat] model: ${model}, prompt: ${systemPrompt.length} chars, topic: ${effectiveTopic || 'none'}, setup: ${Date.now() - t0}ms`);
+    const maxTokens = (mode === 'trainer' || mode === 'tutor') ? 250 : 150;
+    console.log(`[Chat] model: ${model}, mode: ${mode || 'examiner'}, prompt: ${finalPrompt.length} chars, topic: ${effectiveTopic || 'none'}, setup: ${Date.now() - t0}ms`);
 
     const stream = client.messages.stream({
       model,
-      max_tokens: 150,
-      system: systemPrompt,
+      max_tokens: maxTokens,
+      system: finalPrompt,
       messages,
     });
 

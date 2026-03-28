@@ -17,6 +17,8 @@ interface UseVoiceSessionReturn {
   endSession: () => void;
   pauseSession: () => void;
   resumeSession: () => void;
+  setTicketType: (slug: string) => void;
+  setAiMode: (mode: string) => void;
   toggleMic: () => void;
   analyserNode: AnalyserNode | null;
   micLevel: number;
@@ -132,6 +134,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
   const stateRef = useRef<SessionState>('idle');
   const isSessionActiveRef = useRef(false);
   const isPausedRef = useRef(false);
+  const aiModeRef = useRef<string>('examiner');
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const micStreamRef = useRef<MediaStream | null>(null);
@@ -209,6 +212,7 @@ export function useVoiceSession(): UseVoiceSessionReturn {
             messages: messagesRef.current,
             ticketType: ticketTypeRef.current,
             currentTopic: currentTopicRef.current,
+            mode: aiModeRef.current,
           }),
         });
 
@@ -385,6 +389,14 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     setState('idle');
   }, [speechRecognition, stopMicMeter]);
 
+  const setTicketType = useCallback((slug: string) => {
+    ticketTypeRef.current = slug;
+  }, []);
+
+  const setAiMode = useCallback((mode: string) => {
+    aiModeRef.current = mode;
+  }, []);
+
   const toggleMic = useCallback(() => {
     if (stateRef.current === 'listening') {
       speechRecognition.stopListening();
@@ -407,6 +419,8 @@ export function useVoiceSession(): UseVoiceSessionReturn {
     endSession,
     pauseSession,
     resumeSession,
+    setTicketType,
+    setAiMode,
     toggleMic,
     analyserNode: null,
     micLevel,

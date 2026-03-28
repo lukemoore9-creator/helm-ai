@@ -57,6 +57,8 @@ function SessionInner() {
     startSession,
     endSession,
     toggleMic,
+    setTicketType,
+    setAiMode: setAiModeHook,
     analyserNode,
     micLevel,
     browserSupported,
@@ -66,6 +68,8 @@ function SessionInner() {
   const [hasStarted, setHasStarted] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [micError, setMicError] = useState(false);
+  const [currentTicket, setCurrentTicket] = useState(ticketSlug);
+  const [aiMode, setAiMode] = useState<'trainer' | 'tutor' | 'examiner'>('examiner');
   const startTimeRef = useRef<number | null>(null);
 
   // Timer
@@ -176,7 +180,18 @@ function SessionInner() {
       {/* ── Top bar ── */}
       <header className="flex h-14 items-center justify-between border-b border-[#E5E7EB] px-6">
         <span className="font-bold text-[#111111]">Echo</span>
-        <span className="text-sm font-medium text-[#6B7280]">{ticketName}</span>
+        <select
+          value={currentTicket}
+          onChange={(e) => {
+            setCurrentTicket(e.target.value);
+            setTicketType(e.target.value);
+          }}
+          className="rounded-lg border border-[#E5E7EB] bg-white px-3 py-1.5 text-sm font-medium text-[#6B7280] focus:border-[#2563EB] focus:outline-none"
+        >
+          {Object.entries(TICKET_NAMES).map(([slug, name]) => (
+            <option key={slug} value={slug}>{name}</option>
+          ))}
+        </select>
         <button
           onClick={handleEnd}
           className="inline-flex items-center gap-2 rounded-lg bg-[#EF4444] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#DC2626]"
@@ -185,6 +200,23 @@ function SessionInner() {
           End
         </button>
       </header>
+
+      {/* ── Mode selector ── */}
+      <div className="flex h-10 items-center justify-center gap-1 border-b border-[#E5E7EB]">
+        {(['trainer', 'tutor', 'examiner'] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => { setAiMode(m); setAiModeHook(m); }}
+            className={`rounded-full px-4 py-1 text-xs font-medium transition-colors ${
+              aiMode === m
+                ? 'bg-[#2563EB] text-white'
+                : 'border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F7F8FA]'
+            }`}
+          >
+            {m.charAt(0).toUpperCase() + m.slice(1)}
+          </button>
+        ))}
+      </div>
 
       {/* ── Main area ── */}
       <main className="flex flex-1 flex-col items-center justify-center">
