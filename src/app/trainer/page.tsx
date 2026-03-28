@@ -345,9 +345,35 @@ export default function TrainerPage() {
           Run a session and correct or flag examiner responses. Your corrections feed back into the AI.
         </p>
 
-        <span className="mt-5 inline-flex items-center rounded-full border border-[#E5E7EB] px-3 py-1 text-xs font-medium text-[#6B7280]">
-          {ticketName}
-        </span>
+        <select
+          value={currentTicket}
+          onChange={(e) => {
+            setCurrentTicket(e.target.value);
+            setTicketType(e.target.value);
+          }}
+          className="mt-5 rounded-lg border border-[#E5E7EB] bg-white px-3 py-1.5 text-sm font-medium text-[#6B7280] focus:border-[#2563EB] focus:outline-none"
+        >
+          {Object.entries(TICKET_NAMES).map(([slug, name]) => (
+            <option key={slug} value={slug}>{name}</option>
+          ))}
+        </select>
+
+        {/* Mode selector */}
+        <div className="mt-4 flex items-center gap-1">
+          {(['trainer', 'tutor', 'examiner'] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => { setAiMode(m); setAiModeHook(m); }}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                aiMode === m
+                  ? 'bg-[#2563EB] text-white'
+                  : 'border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F7F8FA]'
+              }`}
+            >
+              {m.charAt(0).toUpperCase() + m.slice(1)}
+            </button>
+          ))}
+        </div>
 
         {!browserSupported && (
           <div className="mt-8 flex max-w-md items-start gap-3 rounded-lg border border-[#FDE68A] bg-[#FEF3C7] px-4 py-3">

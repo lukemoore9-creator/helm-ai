@@ -128,12 +128,40 @@ function SessionInner() {
         </div>
 
         <h1 className="text-2xl font-bold tracking-tight text-[#111111] sm:text-3xl">
-          {ticketName}
+          <select
+            value={currentTicket}
+            onChange={(e) => {
+              setCurrentTicket(e.target.value);
+              setTicketType(e.target.value);
+            }}
+            className="rounded-lg border border-[#E5E7EB] bg-white px-3 py-1.5 text-2xl font-bold text-[#111111] focus:border-[#2563EB] focus:outline-none sm:text-3xl"
+          >
+            {Object.entries(TICKET_NAMES).map(([slug, name]) => (
+              <option key={slug} value={slug}>{name}</option>
+            ))}
+          </select>
         </h1>
         <p className="mt-2 max-w-md text-center text-[15px] leading-relaxed text-[#6B7280]">
-          Your AI examiner will ask questions relevant to this certificate.
+          Your AI will ask questions relevant to this certificate.
           Speak clearly and answer as you would in a real oral exam.
         </p>
+
+        {/* Mode selector */}
+        <div className="mt-4 flex items-center gap-1">
+          {(['trainer', 'tutor', 'examiner'] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => { setAiMode(m); setAiModeHook(m); }}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                aiMode === m
+                  ? 'bg-[#2563EB] text-white'
+                  : 'border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F7F8FA]'
+              }`}
+            >
+              {m.charAt(0).toUpperCase() + m.slice(1)}
+            </button>
+          ))}
+        </div>
 
         {/* Browser not supported warning */}
         {!browserSupported && (
@@ -166,9 +194,9 @@ function SessionInner() {
 
         <Link
           href="/select"
-          className="mt-4 text-sm text-[#6B7280] transition-colors hover:text-[#111111]"
+          className="mt-3 text-sm text-[#6B7280] transition-colors hover:text-[#111111]"
         >
-          Choose a different exam
+          All courses
         </Link>
       </div>
     );
