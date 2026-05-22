@@ -3,13 +3,9 @@
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
-import {
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AlertTriangle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { getTicketName } from '@/lib/tickets';
+import { Button } from '@/components/ui/button';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,24 +50,24 @@ interface Report {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const VERDICT_COLOURS: Record<string, string> = {
-  pass: '#1F4E3D',
-  marginal: '#9A7B3A',
-  refer: '#8B2E2E',
+const VERDICT_BG: Record<string, string> = {
+  pass: 'var(--color-success)',
+  marginal: 'var(--color-warning)',
+  refer: 'var(--color-danger)',
 };
 
 const PERFORMANCE_COLOURS: Record<string, string> = {
-  strong: '#1F4E3D',
-  ok: '#9A7B3A',
-  weak: '#8B2E2E',
-  good: '#1F4E3D',
-  bad: '#8B2E2E',
+  strong: 'var(--color-success)',
+  ok: 'var(--color-warning)',
+  weak: 'var(--color-danger)',
+  good: 'var(--color-success)',
+  bad: 'var(--color-danger)',
 };
 
 function barFillColour(score: number): string {
-  if (score >= 75) return '#1F4E3D';
-  if (score >= 50) return '#9A7B3A';
-  return '#D8D4C7';
+  if (score >= 70) return 'var(--color-success)';
+  if (score >= 40) return 'var(--color-warning)';
+  return 'var(--color-danger)';
 }
 
 function computeVerdict(score: number): 'pass' | 'marginal' | 'refer' {
@@ -81,7 +77,7 @@ function computeVerdict(score: number): 'pass' | 'marginal' | 'refer' {
 }
 
 // ---------------------------------------------------------------------------
-// Inner component (needs Suspense for useSearchParams)
+// Inner component
 // ---------------------------------------------------------------------------
 
 function ReportInner() {
@@ -93,9 +89,6 @@ function ReportInner() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-
-  // Verdict reveal beats
-  const [revealBeat, setRevealBeat] = useState(0); // 0=black, 1=verdict, 2=judgement, 3=full
 
   useEffect(() => {
     const generateReport = async () => {
@@ -138,177 +131,99 @@ function ReportInner() {
     generateReport();
   }, [ticketName]);
 
-  // Reveal sequence: after report loads, advance beats
-  useEffect(() => {
-    if (!report) return;
-    // Beat 0 (black) held for 2.5s
-    const t1 = setTimeout(() => setRevealBeat(1), 2500);
-    // Beat 1 (verdict word) → Beat 2 (judgement) at 4s
-    const t2 = setTimeout(() => setRevealBeat(2), 4000);
-    // Beat 2 → Beat 3 (full report) at 5.5s
-    const t3 = setTimeout(() => setRevealBeat(3), 5500);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, [report]);
-
-  // ── Loading state ──
+  // Loading state
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-ink px-6">
-        <p className="font-serif text-[22px] italic text-paper" style={{ fontWeight: 400 }}>
-          Marking the paper.
-        </p>
-        <p
-          className="mt-3 font-mono text-[11px] uppercase text-rule"
-          style={{ letterSpacing: '0.16em' }}
-        >
-          One Moment
-        </p>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <Loader2 className="h-6 w-6 animate-spin text-foreground-muted" />
+        <p className="mt-4 text-sm text-foreground-muted">Generating report…</p>
       </div>
     );
   }
 
-  // ── Empty state — no transcript ──
+  // No transcript
   if (error === 'no-transcript') {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-paper px-6">
-        <AlertTriangle className="h-8 w-8 text-ink-muted" />
-        <p className="mt-4 max-w-md text-center font-serif text-[15px] italic text-ink-muted" style={{ fontWeight: 400 }}>
-          This report needs a completed examination session. Head back and take one first.
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <AlertTriangle className="h-8 w-8 text-foreground-muted" />
+        <p className="mt-4 max-w-md text-center text-[15px] text-foreground-muted">
+          This report needs a completed exam session. Start one first.
         </p>
-        <Link
-          href="/examination"
-          className="group relative mt-8 font-serif text-[17px] italic text-ink"
-          style={{ fontWeight: 400 }}
-        >
-          Take the chair &rarr;
-          <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
-        </Link>
+        <div className="mt-8">
+          <Link href="/examination">
+            <Button>Start exam</Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
-  // ── Error state ──
+  // Error state
   if (error || !report) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-paper px-6">
-        <AlertTriangle className="h-8 w-8 text-marginal" />
-        <p className="mt-4 font-serif text-[15px] italic text-ink" style={{ fontWeight: 400 }}>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <AlertTriangle className="h-8 w-8 text-warning" />
+        <p className="mt-4 text-[15px] text-foreground">
           {error || 'Something went wrong'}
         </p>
-        <Link
-          href="/examination"
-          className="group relative mt-8 font-serif text-[17px] italic text-ink"
-          style={{ fontWeight: 400 }}
-        >
-          Try again &rarr;
-          <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
-        </Link>
+        <div className="mt-8">
+          <Link href="/examination">
+            <Button>Try again</Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
-  // ── Derive verdict client-side ──
+  // Derive verdict
   const verdict = computeVerdict(report.overallScore);
-  const verdictColour = VERDICT_COLOURS[verdict];
+  const verdictBg = VERDICT_BG[verdict];
 
-  // ── Verdict reveal sequence (UNTOUCHED) ──
-  if (revealBeat < 3) {
-    return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink">
-        {/* Beat 1: Verdict word */}
-        <AnimatePresence>
-          {revealBeat >= 1 && (
-            <motion.span
-              className="font-serif text-[96px] font-bold uppercase leading-none"
-              style={{ color: verdictColour }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
+  return (
+    <div className="min-h-screen bg-background">
+      <main className="mx-auto max-w-[880px] px-6 py-12">
+        {/* Verdict Banner */}
+        <div className="rounded-xl border border-border-strong bg-background p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <span
+              className="inline-flex w-fit rounded-full px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white"
+              style={{ backgroundColor: verdictBg }}
             >
               {verdict}
-            </motion.span>
-          )}
-        </AnimatePresence>
-
-        {/* Beat 2: Examiner judgement */}
-        <AnimatePresence>
-          {revealBeat >= 2 && (
-            <motion.p
-              className="mt-6 max-w-lg text-center font-serif text-[22px] italic leading-relaxed text-paper/80"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-            >
-              {report.examinerJudgement}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-    );
-  }
-
-  // ── Full report view ──
-  return (
-    <motion.div
-      className="min-h-screen bg-paper"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-    >
-      <main className="mx-auto max-w-[880px] px-6 py-12">
-        {/* ── Zone 1: Verdict Banner ── */}
-        <div className="border-t border-rule" />
-        <div className="flex flex-col gap-6 py-8 sm:flex-row sm:items-center sm:justify-between">
-          <span
-            className="font-serif text-[40px] sm:text-[56px] uppercase leading-none"
-            style={{ color: verdictColour, fontWeight: 400 }}
-          >
-            {verdict}
-          </span>
-          <p className="flex-1 font-serif text-[17px] italic text-ink sm:text-center" style={{ fontWeight: 400 }}>
-            {report.examinerJudgement}
-          </p>
-          <div className="shrink-0 sm:text-right">
-            <span className="font-mono text-[32px] leading-none text-ink" style={{ fontWeight: 500 }}>
-              {report.overallScore}{' '}
-              <span className="text-[18px] text-ink-muted" style={{ fontWeight: 400 }}>/ 100</span>
             </span>
-            <p
-              className="mt-1 font-mono text-[11px] uppercase text-ink-muted"
-              style={{ letterSpacing: '0.12em' }}
-            >
-              Confidence &middot; {report.confidence}
+            <p className="flex-1 text-[17px] font-medium text-foreground sm:text-center">
+              {report.examinerJudgement}
             </p>
+            <div className="shrink-0 sm:text-right">
+              <span className="text-[32px] font-bold tabular-nums text-foreground">
+                {report.overallScore}{' '}
+                <span className="text-[20px] font-normal text-foreground-muted">/ 100</span>
+              </span>
+              <p className="mt-1 text-xs text-foreground-muted">
+                Confidence: {report.confidence}
+              </p>
+            </div>
           </div>
         </div>
-        <div className="border-t border-rule" />
 
-        {/* ── Zone 2: Section Breakdown ── */}
+        {/* Section Breakdown */}
         {report.sectionBreakdown.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-serif text-[24px] text-ink" style={{ fontWeight: 400 }}>
-              Section breakdown
-            </h2>
-            <div className="mt-6">
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold text-foreground">Section breakdown</h2>
+            <div className="mt-4 rounded-xl border border-border bg-background">
               {report.sectionBreakdown.map((section) => {
                 const isExpanded = expandedSection === section.section;
                 return (
-                  <div key={section.section} className="border-b border-rule">
+                  <div key={section.section} className="border-b border-border last:border-b-0">
                     <button
-                      onClick={() =>
-                        setExpandedSection(isExpanded ? null : section.section)
-                      }
-                      className="flex w-full items-center gap-4 py-4"
+                      onClick={() => setExpandedSection(isExpanded ? null : section.section)}
+                      className="flex w-full items-center gap-4 px-6 py-4"
                     >
-                      <span className="w-48 shrink-0 text-left font-serif text-[17px] italic text-ink" style={{ fontWeight: 400 }}>
+                      <span className="w-48 shrink-0 text-left text-[15px] text-foreground">
                         {section.section}
                       </span>
                       <div className="flex-1">
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-rule">
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2">
                           <div
                             className="h-full rounded-full transition-all duration-500"
                             style={{
@@ -318,32 +233,27 @@ function ReportInner() {
                           />
                         </div>
                       </div>
-                      <span className="w-10 shrink-0 text-right font-mono text-[13px] text-ink-muted">
+                      <span className="w-12 shrink-0 text-right text-sm font-medium tabular-nums text-foreground-muted">
                         {section.score}%
                       </span>
                       {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 shrink-0 text-ink-muted" />
+                        <ChevronUp className="h-4 w-4 shrink-0 text-foreground-muted" />
                       ) : (
-                        <ChevronDown className="h-4 w-4 shrink-0 text-ink-muted" />
+                        <ChevronDown className="h-4 w-4 shrink-0 text-foreground-muted" />
                       )}
                     </button>
                     {isExpanded && section.questions.length > 0 && (
-                      <div className="mb-4 ml-3 border-l border-rule pl-6 pt-1 pb-2">
+                      <div className="mb-4 ml-6 border-l border-border pl-6 pb-2">
                         {section.questions.map((q, qi) => (
-                          <div
-                            key={qi}
-                            className="flex items-start gap-3 py-1.5"
-                          >
+                          <div key={qi} className="flex items-start gap-3 py-1.5">
                             <span
                               className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
                               style={{
                                 backgroundColor:
-                                  PERFORMANCE_COLOURS[q.performance] || '#9A7B3A',
+                                  PERFORMANCE_COLOURS[q.performance] || 'var(--color-warning)',
                               }}
                             />
-                            <span className="font-serif text-[15px] italic text-ink-soft" style={{ fontWeight: 400 }}>
-                              {q.q}
-                            </span>
+                            <span className="text-sm text-foreground-soft">{q.q}</span>
                           </div>
                         ))}
                       </div>
@@ -355,55 +265,43 @@ function ReportInner() {
           </div>
         )}
 
-        {/* ── Zone 3: Key Moments ── */}
+        {/* Key Moments */}
         {report.keyMoments.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-serif text-[24px] text-ink" style={{ fontWeight: 400 }}>
-              Key moments
-            </h2>
-            <div className="mt-8">
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold text-foreground">Key moments</h2>
+            <div className="mt-4 space-y-4">
               {report.keyMoments.map((moment, i) => (
-                <div key={i}>
-                  {/* Moment block */}
-                  <div>
-                    <p className="font-serif text-[19px] italic text-ink" style={{ fontWeight: 400 }}>
-                      {moment.question}
-                    </p>
-                    <p className="mt-3 font-serif text-[15px] italic text-ink-muted" style={{ fontWeight: 400 }}>
-                      &mdash; &ldquo;{moment.studentResponse}&rdquo;
-                    </p>
-                    <div className="mt-3 flex items-center gap-2">
-                      <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{
-                          backgroundColor:
-                            PERFORMANCE_COLOURS[moment.verdictTone] || '#9A7B3A',
-                        }}
-                      />
-                      <span className="font-serif text-[15px] italic text-ink" style={{ fontWeight: 400 }}>
-                        {moment.verdict}
-                      </span>
-                    </div>
-                    {moment.modelAnswer && (
-                      <div className="mt-4">
-                        <p
-                          className="font-mono text-[10px] uppercase text-ink-muted"
-                          style={{ letterSpacing: '0.12em' }}
-                        >
-                          What good looked like
-                        </p>
-                        <p className="mt-1.5 font-serif text-[15px] italic text-ink-soft" style={{ fontWeight: 400 }}>
-                          {moment.modelAnswer}
-                        </p>
-                      </div>
-                    )}
+                <div key={i} className="rounded-xl border border-border bg-background p-5">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
+                    Question
+                  </p>
+                  <p className="mt-1 text-[15px] text-foreground">{moment.question}</p>
+
+                  <p className="mt-3 text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
+                    Your response
+                  </p>
+                  <p className="mt-1 text-sm italic text-foreground-soft">
+                    &ldquo;{moment.studentResponse}&rdquo;
+                  </p>
+
+                  <div className="mt-3 flex items-center gap-2">
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{
+                        backgroundColor:
+                          PERFORMANCE_COLOURS[moment.verdictTone] || 'var(--color-warning)',
+                      }}
+                    />
+                    <span className="text-sm text-foreground">{moment.verdict}</span>
                   </div>
 
-                  {/* Separator between moments */}
-                  {i < report.keyMoments.length - 1 && (
-                    <div className="flex justify-center py-8">
-                      <div className="w-[80%] border-t border-rule" />
-                    </div>
+                  {moment.modelAnswer && (
+                    <>
+                      <p className="mt-3 text-[11px] font-medium uppercase tracking-wide text-foreground-muted">
+                        Model answer
+                      </p>
+                      <p className="mt-1 text-sm text-foreground-soft">{moment.modelAnswer}</p>
+                    </>
                   )}
                 </div>
               ))}
@@ -411,34 +309,18 @@ function ReportInner() {
           </div>
         )}
 
-        {/* ── Zone 4: Drill Cards ── */}
+        {/* Practice These */}
         {report.topThreeDrills.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-serif text-[24px] text-ink" style={{ fontWeight: 400 }}>
-              Revisit these tonight.
-            </h2>
-            {/* Desktop: 3 columns separated by vertical hairlines */}
-            <div className="mt-8 flex flex-col sm:flex-row">
-              {report.topThreeDrills.map((drill, i) => (
-                <div key={drill.topicSlug}>
-                  {/* Mobile separator */}
-                  {i > 0 && <div className="border-t border-rule sm:hidden" />}
-                  <div className={`flex flex-1 flex-col py-6 sm:py-0 ${
-                    i > 0 ? 'sm:border-l sm:border-rule sm:pl-8' : ''
-                  } ${i < report.topThreeDrills.length - 1 ? 'sm:pr-8' : ''}`}>
-                    <span className="font-serif text-[19px] italic text-ink" style={{ fontWeight: 400 }}>
-                      {drill.topicName}
-                    </span>
-                    <p className="mt-2 flex-1 font-serif text-[17px] text-ink-soft" style={{ fontWeight: 400 }}>
-                      {drill.reason}
-                    </p>
-                    <Link
-                      href={`/drill?topic=${drill.topicSlug}`}
-                      className="group relative mt-4 inline-block font-serif text-[15px] italic text-ink"
-                      style={{ fontWeight: 400 }}
-                    >
-                      Ten-minute drill &rarr;
-                      <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold text-foreground">Practice these</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              {report.topThreeDrills.map((drill) => (
+                <div key={drill.topicSlug} className="rounded-xl border border-border bg-background p-5">
+                  <h4 className="text-base font-semibold text-foreground">{drill.topicName}</h4>
+                  <p className="mt-2 text-sm text-foreground-soft">{drill.reason}</p>
+                  <div className="mt-4">
+                    <Link href={`/drill?topic=${drill.topicSlug}`}>
+                      <Button variant="outline" size="sm">Start 10-min drill</Button>
                     </Link>
                   </div>
                 </div>
@@ -447,34 +329,20 @@ function ReportInner() {
           </div>
         )}
 
-        {/* ── Zone 5: Footer Actions ── */}
-        <div className="mt-16">
-          <div className="border-t border-rule" />
-          <div className="flex flex-col items-center pt-8 pb-24">
-            <Link
-              href="/examination"
-              className="group relative font-serif text-[17px] italic text-ink"
-              style={{ fontWeight: 400 }}
-            >
-              Take the chair again &rarr;
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
-            </Link>
-            <button
-              onClick={() => window.print()}
-              className="mt-4 font-mono text-[12px] text-ink-muted transition-colors hover:text-ink"
-            >
-              Save report
-            </button>
-            <Link
-              href="/home"
-              className="mt-4 font-mono text-[12px] text-ink-muted transition-colors hover:text-ink"
-            >
-              Back to home
-            </Link>
-          </div>
+        {/* Actions */}
+        <div className="mt-12 flex gap-3">
+          <Link href="/examination">
+            <Button>Start another exam</Button>
+          </Link>
+          <Link href="/home">
+            <Button variant="outline">Back to home</Button>
+          </Link>
+          <Button variant="ghost" onClick={() => window.print()}>
+            Save as PDF
+          </Button>
         </div>
       </main>
-    </motion.div>
+    </div>
   );
 }
 
@@ -486,10 +354,9 @@ export default function ReportPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-ink">
-          <p className="font-serif text-[22px] italic text-paper" style={{ fontWeight: 400 }}>
-            Marking the paper.
-          </p>
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <Loader2 className="h-6 w-6 animate-spin text-foreground-muted" />
+          <p className="ml-3 text-sm text-foreground-muted">Generating report…</p>
         </div>
       }
     >

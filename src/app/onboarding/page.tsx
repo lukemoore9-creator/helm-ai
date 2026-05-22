@@ -63,19 +63,19 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-paper px-6">
-      <Card className="w-full max-w-[480px] border border-rule shadow-none">
+    <div className="flex min-h-screen items-center justify-center bg-background px-6">
+      <Card className="w-full max-w-[480px] border border-border shadow-none">
         <CardContent className="px-8 py-10">
           <div className="mb-10">
-            <span className="font-serif text-2xl font-bold tracking-tight text-ink">
+            <span className="text-2xl font-semibold text-foreground">
               Echo
             </span>
           </div>
 
-          <h1 className="font-serif text-xl font-bold tracking-tight text-ink">
+          <h1 className="text-xl font-semibold text-foreground">
             Let&apos;s get you set up
           </h1>
-          <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">
+          <p className="mt-2 text-[15px] leading-relaxed text-foreground-muted">
             Tell us about your exam so we can personalise your prep.
           </p>
 
@@ -83,7 +83,7 @@ export default function OnboardingPage() {
             <div className="space-y-2">
               <Label
                 htmlFor="fullName"
-                className="text-sm font-medium text-ink"
+                className="text-sm font-medium text-foreground"
               >
                 Full name
               </Label>
@@ -93,20 +93,20 @@ export default function OnboardingPage() {
                 type="text"
                 required
                 defaultValue={user?.fullName || ""}
-                className="h-[44px] rounded-lg border-rule bg-paper px-4 text-[15px] text-ink transition-colors focus-visible:border-chart-green focus-visible:ring-chart-green/20"
+                className="h-[44px] rounded-lg border-border bg-background px-4 text-[15px] text-foreground transition-colors focus-visible:border-accent focus-visible:ring-accent/20"
                 placeholder="Your full name"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-ink">
+              <Label className="text-sm font-medium text-foreground">
                 What exam are you preparing for?
               </Label>
               <Select
                 value={ticketType}
                 onValueChange={(value) => setTicketType(value ?? "")}
               >
-                <SelectTrigger className="h-[44px] w-full rounded-lg border-rule bg-paper px-4 text-[15px] text-ink transition-colors focus-visible:border-chart-green focus-visible:ring-chart-green/20">
+                <SelectTrigger className="h-[44px] w-full rounded-lg border-border bg-background px-4 text-[15px] text-foreground transition-colors focus-visible:border-accent focus-visible:ring-accent/20">
                   <SelectValue placeholder="Select your exam" />
                 </SelectTrigger>
                 <SelectContent>
@@ -125,9 +125,9 @@ export default function OnboardingPage() {
                 onCheckedChange={(checked) =>
                   setHasExamDate(checked === true)
                 }
-                className="size-4 rounded border-rule data-checked:border-chart-green data-checked:bg-chart-green"
+                className="size-4 rounded border-border data-checked:border-primary data-checked:bg-primary"
               />
-              <Label className="cursor-pointer text-sm font-medium text-ink">
+              <Label className="cursor-pointer text-sm font-medium text-foreground">
                 I have an exam date
               </Label>
             </div>
@@ -136,7 +136,7 @@ export default function OnboardingPage() {
               <div className="space-y-2">
                 <Label
                   htmlFor="examDate"
-                  className="text-sm font-medium text-ink"
+                  className="text-sm font-medium text-foreground"
                 >
                   Exam date
                 </Label>
@@ -144,19 +144,19 @@ export default function OnboardingPage() {
                   id="examDate"
                   name="examDate"
                   type="date"
-                  className="h-[44px] rounded-lg border-rule bg-paper px-4 text-[15px] text-ink transition-colors focus-visible:border-chart-green focus-visible:ring-chart-green/20"
+                  className="h-[44px] rounded-lg border-border bg-background px-4 text-[15px] text-foreground transition-colors focus-visible:border-accent focus-visible:ring-accent/20"
                 />
               </div>
             )}
 
             {error && (
-              <p className="text-sm text-refer">{error}</p>
+              <p className="text-sm text-danger">{error}</p>
             )}
 
             <Button
               type="submit"
               disabled={loading || !ticketType}
-              className="h-[44px] w-full rounded-lg bg-chart-green text-[15px] font-medium text-paper hover:bg-ink disabled:opacity-50"
+              className="h-[44px] w-full"
             >
               {loading ? "Setting up..." : "Continue"}
             </Button>

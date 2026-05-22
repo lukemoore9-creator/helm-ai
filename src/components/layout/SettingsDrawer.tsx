@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { STUDENT_TICKETS, getTicketName } from "@/lib/tickets";
+import { Button } from "@/components/ui/button";
 
 interface StudentData {
   ticket_type: string;
@@ -17,17 +18,13 @@ interface StudentData {
 interface SettingsDrawerProps {
   open: boolean;
   onClose: () => void;
-  scrollToTicket?: boolean;
 }
-
-const ROMAN = ["I", "II", "III", "IV"];
 
 export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
   const router = useRouter();
   const { signOut } = useClerk();
   const { user } = useUser();
   const [student, setStudent] = useState<StudentData | null>(null);
-  const [ticketExpanded, setTicketExpanded] = useState(false);
   const [examDate, setExamDate] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -44,10 +41,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
   }, []);
 
   useEffect(() => {
-    if (open) {
-      fetchStudent();
-      setTicketExpanded(false);
-    }
+    if (open) fetchStudent();
   }, [open, fetchStudent]);
 
   const handleTicketChange = async (slug: string) => {
@@ -59,7 +53,6 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
         body: JSON.stringify({ ticketType: slug }),
       });
       setStudent((prev) => prev ? { ...prev, ticket_type: slug } : prev);
-      setTicketExpanded(false);
       router.refresh();
     } catch (err) {
       console.error("Failed to update ticket:", err);
@@ -94,7 +87,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 z-50 bg-ink/20"
+            className="fixed inset-0 z-50 bg-foreground/20"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -104,7 +97,7 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
 
           {/* Drawer */}
           <motion.div
-            className="fixed inset-y-0 right-0 z-50 w-full max-w-[400px] bg-paper"
+            className="fixed inset-y-0 right-0 z-50 w-full max-w-[420px] bg-background"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -112,13 +105,13 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
           >
             <div className="flex h-full flex-col">
               {/* Header */}
-              <div className="flex h-16 items-center justify-between border-b border-rule px-6">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-muted">
+              <div className="flex h-14 items-center justify-between border-b border-border px-6">
+                <span className="text-lg font-semibold text-foreground">
                   Settings
                 </span>
                 <button
                   onClick={onClose}
-                  className="text-ink-muted transition-colors hover:text-ink"
+                  className="text-foreground-muted transition-colors hover:text-foreground"
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
@@ -126,103 +119,64 @@ export function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto px-6 py-8">
-                {/* Candidate name */}
-                <div className="pb-6">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
-                    Candidate
-                  </span>
-                  <p className="mt-2 font-serif text-[17px] text-ink" style={{ fontWeight: 400 }}>
+              <div className="flex-1 overflow-y-auto px-6 py-6">
+                {/* Name */}
+                <div className="pb-4">
+                  <label className="text-sm font-medium text-foreground-muted">
+                    Name
+                  </label>
+                  <p className="mt-1 text-[15px] text-foreground">
                     {student?.full_name || user?.fullName || "Loading..."}
                   </p>
                 </div>
 
-                <div className="border-t border-rule" />
+                <div className="border-t border-border" />
 
                 {/* Ticket */}
-                <div className="py-6">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
+                <div className="py-4">
+                  <label className="text-sm font-medium text-foreground-muted">
                     Ticket
-                  </span>
-                  <button
-                    onClick={() => setTicketExpanded(!ticketExpanded)}
-                    className="mt-2 block w-full text-left font-serif text-[17px] italic text-ink transition-colors hover:text-chart-green"
-                    style={{ fontWeight: 400 }}
+                  </label>
+                  <select
+                    value={student?.ticket_type || ""}
+                    onChange={(e) => handleTicketChange(e.target.value)}
                     disabled={saving}
+                    className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-accent"
                   >
-                    {student ? getTicketName(student.ticket_type) : "Loading..."}
-                  </button>
-
-                  <AnimatePresence>
-                    {ticketExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-4 space-y-0">
-                          {STUDENT_TICKETS.map((ticket, i) => {
-                            const isActive = student?.ticket_type === ticket.slug;
-                            return (
-                              <button
-                                key={ticket.slug}
-                                onClick={() => handleTicketChange(ticket.slug)}
-                                disabled={saving}
-                                className={`flex w-full items-baseline gap-4 border-b border-rule py-3 text-left transition-colors ${
-                                  isActive ? "text-chart-green" : "text-ink hover:text-chart-green"
-                                }`}
-                              >
-                                <span className="w-8 shrink-0 font-serif text-[15px] text-ink-muted" style={{ fontWeight: 400 }}>
-                                  {ROMAN[i]}
-                                </span>
-                                <span className="flex-1">
-                                  <span className="block font-serif text-[15px]" style={{ fontWeight: 400 }}>
-                                    {ticket.name}
-                                  </span>
-                                  <span className="block font-mono text-[10px] uppercase tracking-[0.1em] text-ink-muted">
-                                    {ticket.side}
-                                  </span>
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                    {STUDENT_TICKETS.map((ticket) => (
+                      <option key={ticket.slug} value={ticket.slug}>
+                        {ticket.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <div className="border-t border-rule" />
+                <div className="border-t border-border" />
 
                 {/* Exam date */}
-                <div className="py-6">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
+                <div className="py-4">
+                  <label className="text-sm font-medium text-foreground-muted">
                     Exam date
-                  </span>
-                  <div className="mt-2">
-                    <input
-                      type="date"
-                      value={examDate}
-                      onChange={(e) => handleExamDateChange(e.target.value)}
-                      className="w-full border-b border-rule bg-transparent py-2 font-serif text-[15px] italic text-ink outline-none transition-colors focus:border-chart-green"
-                      style={{ fontWeight: 400 }}
-                      placeholder="Set exam date"
-                    />
-                  </div>
+                  </label>
+                  <input
+                    type="date"
+                    value={examDate}
+                    onChange={(e) => handleExamDateChange(e.target.value)}
+                    className="mt-1 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-accent"
+                  />
                 </div>
 
-                <div className="border-t border-rule" />
+                <div className="border-t border-border" />
 
                 {/* Sign out */}
-                <div className="py-6">
-                  <button
+                <div className="pt-4">
+                  <Button
+                    variant="outline"
+                    className="w-full"
                     onClick={handleSignOut}
-                    className="font-mono text-[13px] text-ink-muted transition-colors hover:text-refer"
                   >
                     Sign out
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

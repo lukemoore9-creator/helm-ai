@@ -28,24 +28,15 @@ export function VoiceControls({
       <div className="group relative flex flex-col items-center">
         <button
           onClick={onToggleMic}
-          className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
-          style={{
-            border: `1px solid var(${isMuted ? "--color-refer" : "--color-rule"})`,
-            color: `var(${isMuted ? "--color-refer" : "--color-ink"})`,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--color-paper-warm)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-          }}
+          className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-colors hover:bg-surface ${
+            isMuted
+              ? "border-danger text-danger"
+              : "border-border text-foreground"
+          }`}
         >
           {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
         </button>
-        <span
-          className="pointer-events-none absolute -bottom-5 font-mono text-[10px] uppercase tracking-[0.12em] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          style={{ color: "var(--color-ink-muted)" }}
-        >
+        <span className="pointer-events-none absolute -bottom-5 text-xs text-foreground-muted opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           {isMuted ? "Unmute" : "Mute"}
         </span>
       </div>
@@ -54,24 +45,15 @@ export function VoiceControls({
       <div className="group relative flex flex-col items-center">
         <button
           onClick={onTogglePause}
-          className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
-          style={{
-            border: `1px solid var(${isPaused ? "--color-marginal" : "--color-rule"})`,
-            color: `var(${isPaused ? "--color-marginal" : "--color-ink"})`,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--color-paper-warm)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-          }}
+          className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-colors hover:bg-surface ${
+            isPaused
+              ? "border-warning text-warning"
+              : "border-border text-foreground"
+          }`}
         >
           {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
         </button>
-        <span
-          className="pointer-events-none absolute -bottom-5 font-mono text-[10px] uppercase tracking-[0.12em] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          style={{ color: "var(--color-ink-muted)" }}
-        >
+        <span className="pointer-events-none absolute -bottom-5 text-xs text-foreground-muted opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           {isPaused ? "Resume" : "Pause"}
         </span>
       </div>
@@ -81,28 +63,13 @@ export function VoiceControls({
         <button
           onClick={onInterrupt}
           disabled={interruptDisabled}
-          className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
-          style={{
-            border: "1px solid var(--color-rule)",
-            color: "var(--color-ink)",
-            opacity: interruptDisabled ? 0.5 : 1,
-            cursor: interruptDisabled ? "default" : "pointer",
-          }}
-          onMouseEnter={(e) => {
-            if (!interruptDisabled) {
-              e.currentTarget.style.backgroundColor = "var(--color-paper-warm)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-          }}
+          className={`flex h-10 w-10 items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:bg-surface ${
+            interruptDisabled ? "cursor-default opacity-50" : ""
+          }`}
         >
           <CornerDownLeft className="h-4 w-4" />
         </button>
-        <span
-          className="pointer-events-none absolute -bottom-5 font-mono text-[10px] uppercase tracking-[0.12em] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-          style={{ color: "var(--color-ink-muted)" }}
-        >
+        <span className="pointer-events-none absolute -bottom-5 text-xs text-foreground-muted opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           Interrupt
         </span>
       </div>

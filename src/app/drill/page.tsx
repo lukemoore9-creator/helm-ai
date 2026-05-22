@@ -4,11 +4,8 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  AlertTriangle,
-  Loader2,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Orb } from '@/components/voice/Orb';
 import { VoiceControls } from '@/components/voice/VoiceControls';
 import { TranscriptPanel } from '@/components/voice/TranscriptPanel';
@@ -16,6 +13,7 @@ import { useVoiceSession } from '@/lib/hooks/useVoiceSession';
 import { getTicketName } from '@/lib/tickets';
 import { getTopicName } from '@/lib/topics';
 import { TopicPicker } from '@/components/topics/TopicPicker';
+import { Button } from '@/components/ui/button';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -58,9 +56,9 @@ type DrillMode = 'examination' | 'bridge';
 // ---------------------------------------------------------------------------
 
 const VERDICT_COLOURS: Record<string, string> = {
-  pass: 'var(--color-chart-green)',
-  marginal: 'var(--color-brass)',
-  refer: 'var(--color-refer)',
+  pass: 'var(--color-success)',
+  marginal: 'var(--color-warning)',
+  refer: 'var(--color-danger)',
 };
 
 function formatTime(s: number) {
@@ -114,7 +112,6 @@ function DrillInner() {
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
   const [micError, setMicError] = useState(false);
-  const [fadeToBlack, setFadeToBlack] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hasEndedRef = useRef(false);
@@ -177,14 +174,14 @@ function DrillInner() {
       }
     }
 
-    // For bridge drills, route to bridge summary
+    // For tutor drills, route to tutor summary
     if (drillMode === 'bridge') {
       sessionStorage.setItem('echo-bridge-transcript', JSON.stringify(currentTranscript));
-      router.push('/bridge/summary?id=drill');
+      router.push('/tutor/summary?id=drill');
       return;
     }
 
-    // For examination drills, generate report
+    // For examiner drills, generate report
     setReportLoading(true);
     try {
       const res = await fetch('/api/report', {
@@ -238,41 +235,37 @@ function DrillInner() {
       return;
     }
 
-    setFadeToBlack(true);
-    setTimeout(() => {
-      setTimeLeft(600);
-      hasEndedRef.current = false;
-      setPhase('drilling');
+    setTimeLeft(600);
+    hasEndedRef.current = false;
+    setPhase('drilling');
 
-      fetch('/api/session/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketType: ticketSlug, sessionType: 'drill' }),
+    fetch('/api/session/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticketType: ticketSlug, sessionType: 'drill' }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.sessionId) {
+          setSessionId(data.sessionId);
+          sessionIdRef.current = data.sessionId;
+        }
       })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.sessionId) {
-            setSessionId(data.sessionId);
-            sessionIdRef.current = data.sessionId;
-          }
-        })
-        .catch(console.error);
+      .catch(console.error);
 
-      const firstName = profile?.student?.full_name?.split(' ')[0];
-      const totalSessions = profile?.student?.total_sessions || 0;
-      startSession(ticketSlug, firstName, totalSessions, {
-        drillTopic: selectedTopic,
-        drillTopicName: topicName,
-        ...(effectiveMode === 'bridge' ? { bridge: true } : {}),
-      });
-      setFadeToBlack(false);
-    }, 600);
+    const firstName = profile?.student?.full_name?.split(' ')[0];
+    const totalSessions = profile?.student?.total_sessions || 0;
+    startSession(ticketSlug, firstName, totalSessions, {
+      drillTopic: selectedTopic,
+      drillTopicName: topicName,
+      ...(effectiveMode === 'bridge' ? { bridge: true } : {}),
+    });
   };
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-paper">
-        <Loader2 className="h-8 w-8 animate-spin text-chart-green" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-foreground-muted" />
       </div>
     );
   }
@@ -280,37 +273,33 @@ function DrillInner() {
   // Phase: Topic Picker
   if (phase === 'picking') {
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-paper">
-        <motion.div
-          className="mx-auto max-w-[720px] px-6 py-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <p className="font-mono text-[10px] uppercase text-ink-muted" style={{ letterSpacing: "0.16em" }}>
-            Folio 03 &middot; Mess
-          </p>
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto max-w-[720px] px-6 py-12">
+          <Link
+            href="/home"
+            className="text-sm text-foreground-muted transition-colors hover:text-foreground"
+          >
+            ← Back to home
+          </Link>
 
-          <h1 className="mt-8 font-serif text-[24px] sm:text-[32px] text-ink" style={{ fontWeight: 400 }}>
-            10-minute drill
+          <h1 className="mt-8 text-[30px] font-semibold text-foreground">
+            Drill
           </h1>
-          <p className="mt-2 font-serif text-[17px] text-ink-soft" style={{ fontWeight: 400 }}>
+          <p className="mt-2 text-sm text-foreground-soft">
             Pick a topic. Rapid-fire questions for 10 minutes.
           </p>
-          <span className="mt-3 inline-block font-mono text-[12px] uppercase text-ink-muted" style={{ letterSpacing: "0.1em" }}>
-            {ticketName}
-          </span>
+          <p className="mt-1 text-xs text-foreground-muted">{ticketName}</p>
 
           {!browserSupported && (
-            <div className="mt-6 flex items-start gap-3 rounded-lg border border-rule bg-paper-warm px-4 py-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-ink-muted" />
-              <p className="text-sm text-ink-muted">Voice input requires Chrome or Edge.</p>
+            <div className="mt-6 flex items-start gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-foreground-muted" />
+              <p className="text-sm text-foreground-muted">Voice input requires Chrome or Edge.</p>
             </div>
           )}
           {micError && (
-            <div className="mt-4 flex items-start gap-3 rounded-lg border border-rule bg-paper-warm px-4 py-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-refer" />
-              <p className="text-sm text-refer">Microphone access is required.</p>
+            <div className="mt-4 flex items-start gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
+              <p className="text-sm text-danger">Microphone access is required.</p>
             </div>
           )}
 
@@ -323,133 +312,107 @@ function DrillInner() {
               }}
             />
           </div>
-
-          <div className="mt-8">
-            <Link href="/home" className="text-sm text-ink-muted transition-colors hover:text-ink">
-              &larr; Back to home
-            </Link>
-          </div>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
-  // Phase: Mode picker (examination vs bridge drill)
-  if (phase === 'mode' && !fadeToBlack) {
+  // Phase: Mode picker (Examiner vs Tutor)
+  if (phase === 'mode') {
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-paper">
-        <motion.div
-          className="mx-auto max-w-[720px] px-6 py-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <p className="font-mono text-[10px] uppercase text-ink-muted" style={{ letterSpacing: "0.16em" }}>
-            Folio 03 &middot; Mess
-          </p>
+      <div className="min-h-screen bg-background">
+        <div className="mx-auto max-w-[720px] px-6 py-12">
+          <button
+            onClick={() => { setSelectedTopic(null); setPhase('picking'); }}
+            className="text-sm text-foreground-muted transition-colors hover:text-foreground"
+          >
+            ← Choose different topic
+          </button>
 
-          <h1 className="mt-8 font-serif text-[24px] sm:text-[32px] text-ink" style={{ fontWeight: 400 }}>
+          <h1 className="mt-8 text-[30px] font-semibold text-foreground">
             {topicName}
           </h1>
-          <p className="mt-2 font-mono text-[12px] uppercase text-ink-muted" style={{ letterSpacing: "0.1em" }}>
-            10-minute drill &middot; {ticketName}
+          <p className="mt-2 text-sm text-foreground-muted">
+            10-minute drill · {ticketName}
           </p>
 
-          <div className="mt-12 flex flex-col gap-6 sm:flex-row sm:gap-8">
-            <button
-              onClick={() => { setDrillMode('examination'); handleStart('examination'); }}
-              className="group flex-1"
-            >
-              <span className="block font-serif text-[22px] italic text-ink" style={{ fontWeight: 400 }}>
-                Run with examiner Echo
-              </span>
-              <span className="mt-2 block font-serif text-[15px] text-ink-soft" style={{ fontWeight: 400 }}>
-                Formal. Rapid-fire. Verdict at the end.
-              </span>
-              <span className="relative mt-3 inline-block font-serif text-[15px] italic text-ink" style={{ fontWeight: 400 }}>
-                Take the chair &rarr;
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
-              </span>
-            </button>
-
-            <div className="hidden border-l border-rule sm:block" />
-
-            <button
-              onClick={() => { setDrillMode('bridge'); handleStart('bridge'); }}
-              className="group flex-1"
-            >
-              <span className="block font-serif text-[22px] italic text-ink" style={{ fontWeight: 400 }}>
-                Run with bridge Echo
-              </span>
-              <span className="mt-2 block font-serif text-[15px] text-ink-soft" style={{ fontWeight: 400 }}>
-                Friendly. Same pace, warmer tone. No verdict.
-              </span>
-              <span className="relative mt-3 inline-block font-serif text-[15px] italic text-ink" style={{ fontWeight: 400 }}>
-                Step onto the bridge &rarr;
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
-              </span>
-            </button>
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-foreground">Choose a mode</h3>
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={() => setDrillMode('examination')}
+                className={`flex-1 rounded-xl border p-4 text-left transition-colors ${
+                  drillMode === 'examination'
+                    ? 'border-primary bg-surface-2'
+                    : 'border-border hover:border-border-strong'
+                }`}
+              >
+                <span className="text-[15px] font-medium text-foreground">Examiner</span>
+                <p className="mt-1 text-sm text-foreground-soft">Terse, formal. Verdict at the end.</p>
+              </button>
+              <button
+                onClick={() => setDrillMode('bridge')}
+                className={`flex-1 rounded-xl border p-4 text-left transition-colors ${
+                  drillMode === 'bridge'
+                    ? 'border-primary bg-surface-2'
+                    : 'border-border hover:border-border-strong'
+                }`}
+              >
+                <span className="text-[15px] font-medium text-foreground">Tutor</span>
+                <p className="mt-1 text-sm text-foreground-soft">Friendly, explains. No verdict.</p>
+              </button>
+            </div>
           </div>
 
-          <div className="mt-12">
-            <button
-              onClick={() => { setSelectedTopic(null); setPhase('picking'); }}
-              className="text-sm text-ink-muted transition-colors hover:text-ink"
-            >
-              &larr; Choose different topic
-            </button>
+          <div className="mt-8 flex gap-3">
+            <Button onClick={() => handleStart()}>
+              Start drill
+            </Button>
+            <Button variant="outline" onClick={() => router.push('/home')}>
+              Cancel
+            </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    );
-  }
-
-  // Fade to black overlay (between mode selection and drilling)
-  if (fadeToBlack) {
-    return (
-      <motion.div
-        className="fixed inset-0 z-50"
-        style={{ backgroundColor: "#0E1A24" }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      />
     );
   }
 
   // Phase: Active Drill
   if (phase === 'drilling') {
-    const bgClass = drillMode === 'bridge' ? 'bg-paper-warm' : 'bg-paper';
-
     return (
-      <div className={`fixed inset-0 z-50 flex flex-col ${bgClass}`}>
-        <header className="shrink-0 border-b border-rule px-6 py-3">
-          <div className="flex items-center justify-between">
+      <div className="fixed inset-0 z-50 flex flex-col bg-background">
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-6">
+          <Link href="/home" className="text-base font-semibold text-foreground">Echo</Link>
+          <span className="text-[13px] text-foreground-muted">
+            {drillMode === 'bridge' ? 'Tutor' : 'Examiner'} · Drill · {topicName}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (!hasEndedRef.current) {
+                hasEndedRef.current = true;
+                handleDrillEnd();
+              }
+            }}
+            className="text-danger border-danger hover:bg-danger/10"
+          >
+            End
+          </Button>
+        </header>
+
+        <main className="relative flex flex-1 flex-col items-center justify-center">
+          {/* Countdown timer */}
+          <div className="absolute top-4 right-6">
             <span
-              className={`font-mono text-lg font-medium tabular-nums ${
-                timeLeft <= 60 ? 'text-refer' : 'text-ink'
+              className={`text-2xl font-semibold tabular-nums ${
+                timeLeft <= 60 ? 'text-danger' : 'text-foreground'
               }`}
             >
               {formatTime(timeLeft)}
             </span>
-            <span className="font-mono text-[13px] text-ink-muted">
-              {topicName} &middot; Q{questionsAskedInSection + 1}
-            </span>
-            <button
-              onClick={() => {
-                if (!hasEndedRef.current) {
-                  hasEndedRef.current = true;
-                  handleDrillEnd();
-                }
-              }}
-              className="text-xs font-medium text-ink-muted transition-colors hover:text-refer"
-            >
-              Stand down
-            </button>
           </div>
-        </header>
 
-        <main className="flex flex-1 flex-col items-center justify-center">
           <Orb state={state} analyserNode={analyserNode} micLevel={micLevel} size={240} />
           <div className="mt-4">
             <VoiceControls
@@ -460,17 +423,14 @@ function DrillInner() {
               onTogglePause={() => (isPaused ? resumeSession() : pauseSession())}
               onInterrupt={interrupt}
             />
-            <p
-              className="mt-3 whitespace-nowrap text-center font-mono text-[10px] uppercase text-ink-muted"
-              style={{ letterSpacing: "0.12em" }}
-            >
-              M&ensp;Mute&ensp;&middot;&ensp;P&ensp;Pause&ensp;&middot;&ensp;Space&ensp;Interrupt
+            <p className="mt-3 text-center text-xs text-foreground-muted">
+              M Mute · P Pause · Space Interrupt
             </p>
           </div>
           {lastError && (
-            <div className="mt-6 flex max-w-md items-start gap-3 rounded-lg border border-rule bg-paper px-4 py-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-refer" />
-              <p className="text-sm text-refer">{lastError}</p>
+            <div className="mt-6 flex max-w-md items-start gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
+              <p className="text-sm text-danger">{lastError}</p>
             </div>
           )}
         </main>
@@ -483,10 +443,10 @@ function DrillInner() {
   // Phase: Ending / Loading
   if (phase === 'ending' || reportLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-paper px-6">
-        <Loader2 className="h-8 w-8 animate-spin text-chart-green" />
-        <p className="mt-4 text-[15px] text-ink-muted">
-          Time. Putting your results together...
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <Loader2 className="h-6 w-6 animate-spin text-foreground-muted" />
+        <p className="mt-4 text-sm text-foreground-muted">
+          Generating report...
         </p>
       </div>
     );
@@ -495,19 +455,16 @@ function DrillInner() {
   // Phase: Report Error
   if (reportError || !drillReport) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-paper px-6">
-        <AlertTriangle className="h-8 w-8 text-brass" />
-        <p className="mt-4 text-[15px] text-ink">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <AlertTriangle className="h-8 w-8 text-warning" />
+        <p className="mt-4 text-[15px] text-foreground">
           {reportError || 'Something went wrong'}
         </p>
-        <Link
-          href="/drill"
-          className="group relative mt-6 font-serif text-[17px] italic text-ink"
-          style={{ fontWeight: 400 }}
-        >
-          Try again &rarr;
-          <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
-        </Link>
+        <div className="mt-6">
+          <Link href="/drill">
+            <Button>Try again</Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -517,45 +474,38 @@ function DrillInner() {
   const verdictColour = VERDICT_COLOURS[verdict];
 
   return (
-    <div className="min-h-screen bg-paper">
-      <main className="mx-auto max-w-[880px] px-6 py-12 space-y-12">
+    <div className="min-h-screen bg-background">
+      <main className="mx-auto max-w-[880px] space-y-8 px-6 py-12">
         {/* Verdict Banner */}
-        <div className="flex h-24 items-center justify-between border-b border-rule px-2">
+        <div className="flex items-center justify-between rounded-xl border border-border-strong bg-background p-6">
           <span
-            className="font-serif text-[48px] uppercase leading-none"
-            style={{ color: verdictColour, fontWeight: 400 }}
+            className="rounded-full px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white"
+            style={{ backgroundColor: verdictColour }}
           >
             {verdict}
           </span>
-          <p className="mx-8 flex-1 text-center font-serif text-[17px] italic text-ink" style={{ fontWeight: 400 }}>
+          <p className="mx-6 flex-1 text-center text-[17px] font-medium text-foreground">
             {drillReport.examinerJudgement}
           </p>
           <div className="shrink-0 text-right">
-            <span className="font-mono text-[32px] font-medium leading-none text-ink">
+            <span className="text-[32px] font-bold tabular-nums text-foreground">
               {drillReport.overallScore}{' '}
-              <span className="text-[20px] font-normal text-ink-muted">/ 100</span>
+              <span className="text-[20px] font-normal text-foreground-muted">/ 100</span>
             </span>
-            <p className="mt-1 font-mono text-[13px] text-ink-muted">
-              {topicName} drill
-            </p>
+            <p className="mt-1 text-xs text-foreground-muted">{topicName} drill</p>
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex flex-col items-center gap-3 pb-8">
-          <Link
-            href={`/drill?topic=${selectedTopic}`}
-            className="group relative font-serif text-[17px] italic text-ink"
-            style={{ fontWeight: 400 }}
-          >
-            Drill again &rarr;
-            <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
+        {/* Actions */}
+        <div className="flex items-center justify-center gap-3 pb-8">
+          <Link href={`/drill?topic=${selectedTopic}`}>
+            <Button>Drill again</Button>
           </Link>
-          <Link href="/drill" className="text-sm text-ink-muted transition-colors hover:text-ink">
-            Different topic
+          <Link href="/drill">
+            <Button variant="outline">Different topic</Button>
           </Link>
-          <Link href="/home" className="mt-1 text-sm text-ink-muted transition-colors hover:text-ink">
-            Back to home
+          <Link href="/home">
+            <Button variant="ghost">Back to home</Button>
           </Link>
         </div>
       </main>
@@ -571,8 +521,8 @@ export default function DrillPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-paper">
-          <Loader2 className="h-8 w-8 animate-spin text-chart-green" />
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <Loader2 className="h-6 w-6 animate-spin text-foreground-muted" />
         </div>
       }
     >

@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 500,
-      system: `You are analysing a bridge conversation (informal maritime study session) between Echo (on the bridge, as a senior officer) and a candidate. Generate a JSON summary with:
+      system: `You are analysing a tutor conversation (informal maritime study session) between Echo (a senior officer) and a candidate. Generate a JSON summary with:
 - topicsCovered: array of {slug, count} where slug is one of: colregs, navigation, safety, solas, meteorology, stability, marpol, stcw, cargo, gmdss, bridge-equipment, maritime-law. Count is approximately how many questions/exchanges on that topic.
 - thingsToRevisit: array of 1-3 short sentences about areas where the candidate was uncertain or got things wrong. Keep it encouraging.
 - encouragement: one warm sentence about how the session went overall.
@@ -36,7 +36,7 @@ Return ONLY valid JSON, no markdown fences.`,
       messages: [
         {
           role: "user",
-          content: `Here is the bridge conversation transcript:\n\n${formattedTranscript}`,
+          content: `Here is the tutor conversation transcript:\n\n${formattedTranscript}`,
         },
       ],
     });
@@ -54,7 +54,7 @@ Return ONLY valid JSON, no markdown fences.`,
       });
     }
   } catch (err) {
-    console.error("Bridge summary error:", err);
+    console.error("Tutor summary error:", err);
     return Response.json({ error: "Failed to generate summary" }, { status: 500 });
   }
 }

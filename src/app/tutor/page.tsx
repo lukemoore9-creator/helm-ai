@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, ChevronUp, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Orb } from "@/components/voice/Orb";
 import { VoiceControls } from "@/components/voice/VoiceControls";
 import { TranscriptPanel } from "@/components/voice/TranscriptPanel";
@@ -12,6 +12,7 @@ import { useVoiceSession } from "@/lib/hooks/useVoiceSession";
 import { getTicketName } from "@/lib/tickets";
 import { getTopicName } from "@/lib/topics";
 import { TopicPicker } from "@/components/topics/TopicPicker";
+import { Button } from "@/components/ui/button";
 
 interface StudentProfile {
   student: {
@@ -23,7 +24,7 @@ interface StudentProfile {
   };
 }
 
-export default function BridgePage() {
+export default function TutorPage() {
   const router = useRouter();
   const {
     state,
@@ -52,7 +53,6 @@ export default function BridgePage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [micError, setMicError] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
-  const [fadeToBlack, setFadeToBlack] = useState(false);
   const [typedMessage, setTypedMessage] = useState("");
 
   const transcriptRef = useRef(transcript);
@@ -88,27 +88,22 @@ export default function BridgePage() {
       return;
     }
 
-    setFadeToBlack(true);
+    fetch("/api/session/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ticketType: ticketSlug, sessionType: "bridge" }),
+    })
+      .then((res) => res.json())
+      .then((data) => { if (data.sessionId) setSessionId(data.sessionId); })
+      .catch(console.error);
 
-    setTimeout(() => {
-      fetch("/api/session/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticketType: ticketSlug, sessionType: "bridge" }),
-      })
-        .then((res) => res.json())
-        .then((data) => { if (data.sessionId) setSessionId(data.sessionId); })
-        .catch(console.error);
-
-      setHasStarted(true);
-      const totalSessions = profile?.student?.total_sessions || 0;
-      // Use bridge mode — Echo persona
-      startSession(ticketSlug, firstName, totalSessions, {
-        drillTopic: topicForSession === "lead" ? undefined : topicForSession ?? undefined,
-        drillTopicName: topicDisplay || undefined,
-        bridge: true,
-      });
-    }, 600);
+    setHasStarted(true);
+    const totalSessions = profile?.student?.total_sessions || 0;
+    startSession(ticketSlug, firstName, totalSessions, {
+      drillTopic: topicForSession === "lead" ? undefined : topicForSession ?? undefined,
+      drillTopicName: topicDisplay || undefined,
+      bridge: true,
+    });
   }, [topicForSession, topicDisplay, ticketSlug, firstName, profile, startSession]);
 
   const handleEnd = useCallback(async () => {
@@ -132,11 +127,11 @@ export default function BridgePage() {
           }),
         });
       } catch (err) {
-        console.error("Failed to end bridge session:", err);
+        console.error("Failed to end tutor session:", err);
       }
     }
 
-    router.push(`/bridge/summary?id=${sessionId || "local"}`);
+    router.push(`/tutor/summary?id=${sessionId || "local"}`);
   }, [endSession, sessionId, router]);
 
   const handleTypedSubmit = (e: React.FormEvent) => {
@@ -161,33 +156,33 @@ export default function BridgePage() {
   }, [hasStarted, toggleMic, isPaused, resumeSession, pauseSession, interrupt]);
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-paper-warm" />;
+    return <div className="flex min-h-screen items-center justify-center bg-background" />;
   }
 
-  // Active bridge session
+  // Active tutor session
   if (hasStarted) {
     const lastExaminerMessage = [...transcript].reverse().find((t) => t.speaker === "examiner");
 
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-paper-warm">
+      <div className="fixed inset-0 z-50 flex flex-col bg-background">
         {/* Header */}
-        <header className="flex h-10 shrink-0 items-center justify-between border-b border-rule px-6">
-          <Link href="/home" className="font-serif text-sm text-ink" style={{ fontWeight: 400 }}>Echo</Link>
-          <span className="font-mono text-xs text-ink-muted">Bridge &middot; {topicDisplay}</span>
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-6">
+          <Link href="/home" className="text-sm font-semibold text-foreground">Echo</Link>
+          <span className="text-xs text-foreground-muted">Tutor · {topicDisplay}</span>
           <button
             onClick={handleEnd}
-            className="text-xs font-medium text-ink-muted transition-colors hover:text-refer"
+            className="text-xs font-medium text-foreground-muted transition-colors hover:text-danger"
           >
-            That&apos;ll do
+            End
           </button>
         </header>
 
         {/* Centre */}
         <main className="flex flex-1 flex-col items-center justify-center px-6">
           {lastError && (
-            <div className="mb-6 flex max-w-md items-start gap-3 rounded-lg border border-rule bg-paper px-4 py-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-refer" />
-              <p className="text-sm text-refer">{lastError}</p>
+            <div className="mb-6 flex max-w-md items-start gap-3 rounded-lg border border-border bg-background px-4 py-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
+              <p className="text-sm text-danger">{lastError}</p>
             </div>
           )}
 
@@ -202,20 +197,14 @@ export default function BridgePage() {
               onTogglePause={() => (isPaused ? resumeSession() : pauseSession())}
               onInterrupt={interrupt}
             />
-            <p
-              className="mt-3 whitespace-nowrap text-center font-mono text-[10px] uppercase text-ink-muted"
-              style={{ letterSpacing: "0.12em" }}
-            >
-              M&ensp;Mute&ensp;&middot;&ensp;P&ensp;Pause&ensp;&middot;&ensp;Space&ensp;Interrupt
-            </p>
           </div>
 
-          <p className="mt-6 max-w-lg text-center font-serif text-[22px] leading-snug text-ink" style={{ fontWeight: 400 }}>
-            {lastExaminerMessage?.text || "Echo is settling in\u2026"}
+          <p className="mt-6 max-w-lg text-center text-[22px] leading-snug text-foreground">
+            {lastExaminerMessage?.text || "Starting session\u2026"}
           </p>
 
           {state === "listening" && (
-            <p className="mt-4 font-mono text-xs tracking-wider text-ink-muted">
+            <p className="mt-4 text-xs text-foreground-muted">
               Listening
             </p>
           )}
@@ -223,11 +212,8 @@ export default function BridgePage() {
           {/* Typed input */}
           <div className="mt-6 flex flex-col items-center">
             {isMuted && (
-              <p
-                className="mb-2 font-mono text-[11px] uppercase text-ink-muted"
-                style={{ letterSpacing: "0.12em" }}
-              >
-                Mic muted — type to Echo instead
+              <p className="mb-2 text-xs text-foreground-muted">
+                Mic muted — type instead
               </p>
             )}
             <form onSubmit={handleTypedSubmit}>
@@ -235,9 +221,8 @@ export default function BridgePage() {
                 type="text"
                 value={typedMessage}
                 onChange={(e) => setTypedMessage(e.target.value)}
-                placeholder="Ask Echo anything..."
-                className="w-[320px] max-w-full border-b border-rule bg-transparent py-2 text-sm text-ink placeholder:text-ink-muted outline-none transition-colors focus:border-chart-green"
-                style={{ fontFamily: "var(--font-sans)" }}
+                placeholder="Ask Echo a question..."
+                className="w-[320px] max-w-full border-b border-border bg-transparent py-2 text-sm text-foreground placeholder:text-foreground-muted outline-none transition-colors focus:border-accent"
               />
             </form>
           </div>
@@ -251,7 +236,7 @@ export default function BridgePage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-              className="absolute inset-x-0 bottom-10 z-40 border-t border-rule bg-paper-warm"
+              className="absolute inset-x-0 bottom-10 z-40 border-t border-border bg-background"
               style={{ maxHeight: "50vh" }}
             >
               <TranscriptPanel transcript={transcript} interimTranscript={interimTranscript} />
@@ -260,11 +245,11 @@ export default function BridgePage() {
         </AnimatePresence>
 
         {/* Footer */}
-        <footer className="flex h-10 shrink-0 items-center justify-between border-t border-rule px-6">
-          <span className="font-mono text-[12px] text-ink-muted">Bridge &middot; {topicDisplay}</span>
+        <footer className="flex h-10 shrink-0 items-center justify-between border-t border-border px-6">
+          <span className="text-xs text-foreground-muted">Tutor · {topicDisplay}</span>
           <button
             onClick={() => setTranscriptOpen((prev) => !prev)}
-            className="flex items-center gap-1 text-xs font-medium text-ink-muted transition-colors hover:text-ink"
+            className="flex items-center gap-1 text-xs font-medium text-foreground-muted transition-colors hover:text-foreground"
           >
             Transcript
             {transcriptOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
@@ -278,57 +263,40 @@ export default function BridgePage() {
   const hasTopicSelected = selectedTopic !== null || leadSelected;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-paper">
-      <AnimatePresence>
-        {fadeToBlack && (
-          <motion.div
-            className="fixed inset-0 z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            style={{ backgroundColor: "#0E1A24" }}
-          />
-        )}
-      </AnimatePresence>
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-[720px] px-6 py-12">
+        <Link
+          href="/home"
+          className="text-sm text-foreground-muted transition-colors hover:text-foreground"
+        >
+          &larr; Back
+        </Link>
 
-      <motion.div
-        className="mx-auto max-w-[720px] px-6 py-16"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-      >
-        {/* Folio mark */}
-        <p className="font-mono text-[10px] uppercase text-ink-muted" style={{ letterSpacing: "0.16em" }}>
-          Folio 02 &middot; Bridge
+        <h1 className="mt-8 text-[30px] font-semibold text-foreground">
+          Tutor session
+        </h1>
+        <p className="mt-2 max-w-[480px] text-[15px] text-foreground-soft">
+          Have a conversation with Echo about any topic. No verdict, no score — just focused learning.
         </p>
-
-        <div className="mt-12">
-          <h1 className="font-serif text-[20px] sm:text-[24px] italic text-ink" style={{ fontWeight: 400 }}>
-            The bridge.
-          </h1>
-          <p className="mt-4 max-w-[480px] font-serif text-[17px] text-ink-soft" style={{ fontWeight: 400 }}>
-            Step onto the bridge. Echo, on the bridge, holds the {ticketName} ticket and has years at sea. We&apos;ll chat through whatever you need. No verdict, no score &mdash; just two officers talking shop.
-          </p>
-        </div>
 
         {/* Warnings */}
         {!browserSupported && (
-          <div className="mt-6 flex items-start gap-3 rounded-lg border border-rule bg-paper-warm px-4 py-3">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-ink-muted" />
-            <p className="text-sm text-ink-muted">Voice input requires Chrome or Edge.</p>
+          <div className="mt-6 flex items-start gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-foreground-muted" />
+            <p className="text-sm text-foreground-muted">Voice input requires Chrome or Edge.</p>
           </div>
         )}
         {micError && (
-          <div className="mt-4 flex items-start gap-3 rounded-lg border border-rule bg-paper-warm px-4 py-3">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-refer" />
-            <p className="text-sm text-refer">Microphone access is required.</p>
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
+            <p className="text-sm text-danger">Microphone access is required.</p>
           </div>
         )}
 
         {/* Topic picker */}
         <div className="mt-10">
-          <p className="mb-4 font-mono text-[10px] uppercase text-ink-muted" style={{ letterSpacing: "0.12em" }}>
-            What do you want to talk about?
+          <p className="mb-4 text-sm font-medium text-foreground-muted">
+            Choose a topic
           </p>
           <TopicPicker
             selected={selectedTopic}
@@ -346,28 +314,18 @@ export default function BridgePage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-12">
-          <button
+        <div className="mt-10 flex items-center gap-3">
+          <Button
             onClick={handleStart}
             disabled={!hasTopicSelected}
-            className={`group relative font-serif text-[22px] italic transition-colors ${
-              hasTopicSelected ? "text-ink hover:text-chart-green" : "text-ink-muted cursor-not-allowed"
-            }`}
-            style={{ fontWeight: 400 }}
           >
-            Step onto the bridge &rarr;
-            {hasTopicSelected && (
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-chart-green transition-all duration-300 ease-out group-hover:w-full" />
-            )}
-          </button>
-        </div>
-
-        <div className="mt-6">
-          <Link href="/home" className="text-sm text-ink-muted transition-colors hover:text-ink">
-            &larr; Back to home
+            Start tutor session
+          </Button>
+          <Link href="/home">
+            <Button variant="outline">Cancel</Button>
           </Link>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
